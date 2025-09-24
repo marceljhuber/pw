@@ -1,8 +1,8 @@
 {
     "main": {
         "image_dir": "/home/mhuber/Thesis/data/KermanyV3_micro/train",
-        "latents_path": "./latents/lima",
-        "trained_autoencoder_path": "./runs/lima_20250917_1334/model_best.pt",
+        "latents_path": "./latents/lima/train",
+        "trained_autoencoder_path": "./runs/lima/model_best.pt",
         "trained_unet_path": null
     },
     "env_config": {

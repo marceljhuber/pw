@@ -384,13 +384,13 @@ def create_latent_dataloaders(
 
 ########################################################################################################################
 def create_cluster_dataloaders(
-    csv_path, batch_size=40, num_workers=8, train_ratio=0.9, transform=None
+        data_dir, batch_size=40, num_workers=8, train_ratio=0.8, transform=None
 ):
     """
-    Create train and validation dataloaders from a CSV file containing file paths and cluster labels.
+    Create train and validation dataloaders from a directory containing files with class names in filenames.
 
     Args:
-        csv_path (str): Path to the CSV file with 'filepath' and 'cluster' columns
+        data_dir (str): Path to directory containing the latent files
         batch_size (int): Batch size for dataloaders
         num_workers (int): Number of workers for dataloaders
         train_ratio (float): Ratio of patients to include in training set
@@ -402,23 +402,48 @@ def create_cluster_dataloaders(
     # Set random seeds for reproducibility
     set_random_seeds()
 
-    # Read CSV file
-    df = pd.read_csv(csv_path)
+    # Class name to label mapping
+    class_mapping = {
+        'CNV': 0,
+        'DME': 1,
+        'DRUSEN': 2,
+        'NORMAL': 3
+    }
 
-    # Check if required columns exist
-    if "latent_path" not in df.columns or "cluster" not in df.columns:
-        raise ValueError("CSV must contain 'filepath' and 'cluster' columns")
+    # Find all files in the directory
+    data_path = Path(data_dir)
+    if not data_path.exists():
+        raise ValueError(f"Directory {data_dir} does not exist")
 
-    # Extract file paths and cluster labels
-    file_paths = df["latent_path"].tolist()
-    cluster_labels = df["cluster"].tolist()
+    # Get all files (assuming they have extensions like .pt, .npy, etc.)
+    file_paths = []
+    cluster_labels = []
 
-    # Verify that all files exist
+    # Search for files with common extensions
+    for extension in ['*.pt', '*.pth', '*.npy', '*.npz', '*.pkl']:
+        for file_path in data_path.glob(extension):
+            filename = file_path.name.upper()  # Convert to uppercase for matching
+
+            # Extract class label from filename
+            label = None
+            for class_name, class_label in class_mapping.items():
+                if class_name in filename:
+                    label = class_label
+                    break
+
+            if label is not None:
+                file_paths.append(str(file_path))
+                cluster_labels.append(label)
+            else:
+                print(f"Warning: Could not determine class for file {file_path.name}")
+
+    if not file_paths:
+        raise ValueError(f"No files found with recognizable class names (CNV, DME, DRUSEN, NORMAL) in {data_dir}")
+
+    # Verify that all files exist (they should since we just found them)
     missing_files = [f for f in file_paths if not os.path.exists(f)]
     if missing_files:
-        print(
-            f"Warning: {len(missing_files)} files not found. First few: {missing_files[:5]}"
-        )
+        print(f"Warning: {len(missing_files)} files not found. First few: {missing_files[:5]}")
         # Filter out missing files
         valid_indices = [i for i, f in enumerate(file_paths) if os.path.exists(f)]
         file_paths = [file_paths[i] for i in valid_indices]
@@ -432,18 +457,14 @@ def create_cluster_dataloaders(
     print(f"Found {len(train_files)} training and {len(val_files)} validation samples")
 
     # Count unique patients in each split
-    train_patients = set(
-        [
-            Path(f).stem.split("-")[1] if "-" in Path(f).stem else Path(f).stem
-            for f in train_files
-        ]
-    )
-    val_patients = set(
-        [
-            Path(f).stem.split("-")[1] if "-" in Path(f).stem else Path(f).stem
-            for f in val_files
-        ]
-    )
+    train_patients = set([
+        Path(f).stem.split("-")[1] if "-" in Path(f).stem else Path(f).stem
+        for f in train_files
+    ])
+    val_patients = set([
+        Path(f).stem.split("-")[1] if "-" in Path(f).stem else Path(f).stem
+        for f in val_files
+    ])
 
     print(f"Training samples from {len(train_patients)} patients")
     print(f"Validation samples from {len(val_patients)} patients")
@@ -457,15 +478,21 @@ def create_cluster_dataloaders(
     for label in val_labels:
         val_cluster_counts[label] = val_cluster_counts.get(label, 0) + 1
 
-    print("Training samples per cluster:")
+    # Print class distribution with class names
+    reverse_mapping = {v: k for k, v in class_mapping.items()}
+
+    print("Training samples per class:")
     for cluster, count in sorted(train_cluster_counts.items()):
-        print(f"  Cluster {cluster}: {count} samples")
+        class_name = reverse_mapping.get(cluster, f"Unknown({cluster})")
+        print(f"  {class_name} (label {cluster}): {count} samples")
 
-    print("Validation samples per cluster:")
+    print("Validation samples per class:")
     for cluster, count in sorted(val_cluster_counts.items()):
-        print(f"  Cluster {cluster}: {count} samples")
+        class_name = reverse_mapping.get(cluster, f"Unknown({cluster})")
+        print(f"  {class_name} (label {cluster}): {count} samples")
 
-    print(f"train_files: ", len(train_files))
+    print(f"Total files processed: {len(file_paths)}")
+
     # Create datasets
     train_dataset = ClusterDataset(train_files, train_labels, transform)
     val_dataset = ClusterDataset(val_files, val_labels, transform)

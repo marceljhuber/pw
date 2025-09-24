@@ -75,10 +75,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Setup directories
 timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-run_dir = Path(f"./runs/{config['main']['jobname']}_{timestamp}")
+run_dir = Path(f"./runs/CONTROLNET/{config['main']['jobname']}_{timestamp}")
 run_dir.mkdir(parents=True, exist_ok=True)
-recon_dir = run_dir / "reconstructions"
-recon_dir.mkdir(exist_ok=True)
 
 # Set up directories based on configurations
 env_config_out["model_dir"] = os.path.join(run_dir, env_config_out["model_dir"])

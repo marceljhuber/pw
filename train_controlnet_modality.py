@@ -28,7 +28,7 @@ print_config()
 ########################################################################################################################
 # Step 1: Training Config Preparation
 ########################################################################################################################
-config_path = "./configs/config_CONTROLNET_france.json"
+config_path = "./configs/config_CONTROLNET_modality.json"
 
 with open(config_path, "r") as f:
     config = json.load(f)
@@ -77,8 +77,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 timestamp = datetime.now().strftime("%Y%m%d_%H%M")
 run_dir = Path(f"./runs/{config['main']['jobname']}_{timestamp}")
 run_dir.mkdir(parents=True, exist_ok=True)
+
 recon_dir = run_dir / "reconstructions"
 recon_dir.mkdir(exist_ok=True)
+
+vis_dir = run_dir / "visualizations"
+vis_dir.mkdir(exist_ok=True)
 
 # Set up directories based on configurations
 env_config_out["model_dir"] = os.path.join(run_dir, env_config_out["model_dir"])

@@ -17,6 +17,8 @@ import random
 import sys
 import time
 from datetime import timedelta
+from datetime import datetime
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -96,7 +98,7 @@ def generate_image_grid(
     noise_scheduler.set_timesteps(1000, device=device)
 
     # Set fixed seeds for reproducibility across epochs
-    fixed_seeds = [42, 1337, 7, 13, 999, 123, 456, 789, 101, 202]
+    fixed_seeds = [42, 1337, 7]
     assert len(fixed_seeds) >= num_seeds, "Not enough fixed seeds provided"
 
     # Initialize grid to store generated images
@@ -208,6 +210,7 @@ def generate_image_grid(
 
     plt.tight_layout()
     plt.savefig(f"{save_dir}/epoch_{epoch + 1}_grid.png", dpi=150, bbox_inches="tight")
+    print(f"Saved to {save_dir}/epoch_{epoch + 1}_grid.png")
     plt.close()
 
     controlnet.train()
@@ -275,7 +278,7 @@ def main():
     # Step 1: Define Data Loader
     # train_loader, val_loader = create_latent_dataloaders(args.latent_dir)
     train_loader, val_loader = create_cluster_dataloaders(
-        csv_path=args.cluster_labels, batch_size=40, num_workers=8, train_ratio=0.9
+        data_dir=args.latent_dir, batch_size=40, num_workers=8, train_ratio=0.9
     )
     # train_loader = torch.utils.data.DataLoader(
     #     list(train_loader.dataset)[: 100 * train_loader.batch_size],
@@ -283,13 +286,17 @@ def main():
     #     shuffle=True,
     # )
 
-    args.model_dir = os.path.join(
-        args.model_dir,
-        "CONTROLNET",
-        args.exp_name,
-    )
-    vis_dir = os.path.join(args.model_dir, f"visualizations")
-    os.makedirs(vis_dir, exist_ok=True)
+    # args.model_dir = os.path.join(
+    #     args.model_dir,
+    #     "CONTROLNET",
+    #     args.exp_name,
+    # )
+
+    # timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+    # run_dir = Path(f"./{args.model_dir}/{config['main']['jobname']}_{timestamp}/visualizations")
+    # run_dir.mkdir(parents=True, exist_ok=True)
+    # print(run_dir)
+    # # vis_dir = os.path.join(args.model_dir, f"visualizations")
 
     # Step 2: Define Autoencoder, Unet and ControlNet
     ####################################################################################################################
@@ -331,7 +338,7 @@ def main():
             weights_only=False,
         )
 
-        unet.load_state_dict(diffusion_model_ckpt["unet_state_dict"])
+        unet.load_state_dict(diffusion_model_ckpt["unet_state_dict"], strict=False)
         # load scale factor from diffusion model checkpoint
         scale_factor = diffusion_model_ckpt["scale_factor"]
         logger.info(f"Load trained diffusion model from {args.trained_diffusion_path}.")
@@ -568,6 +575,7 @@ def main():
                 if world_size > 1
                 else controlnet.state_dict()
             )
+            print(f"{args.model_dir}/{args.exp_name}_{epoch}.pt")  # TODO
             torch.save(
                 {
                     "epoch": epoch + 1,
@@ -584,6 +592,7 @@ def main():
             if epoch_loss < best_loss:
                 best_loss = epoch_loss
                 logger.info(f"best loss -> {best_loss}.")
+                print(f"{args.model_dir}/{args.exp_name}_best.pt") #TODO
                 torch.save(
                     {
                         "epoch": epoch + 1,

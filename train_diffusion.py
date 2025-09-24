@@ -71,7 +71,7 @@ def setup_training_dirs(name, checkpoint_path=None):
     log_dir = Path(run_dir) / "logs"
     log_dir.mkdir(exist_ok=True)
 
-    model_save_path = model_dir / "diffusion_model.pt"
+    model_save_path = Path(run_dir) / "diffusion_model.pt"
     start_epoch = 0
 
     if checkpoint_path is not None and checkpoint_path != "None":
@@ -151,6 +151,8 @@ def main():
         json.dump(datalist, f)
     with open(config_save_path, "w") as f:
         json.dump(config, f, indent=4)
+
+    os.makedirs(f"{run_dir}/models", exist_ok=True)
 
     # Initialize wandb
     wandb.init(

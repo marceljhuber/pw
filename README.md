@@ -31,4 +31,27 @@ It handles run directory setup, seed fixing, image discovery/splitting, W&B logg
 ## Usage
 
 ```bash
-python scripts/train_diffusion.py --config ./configs/config_DIFF.json --name DIFFUSION
+python train_diffusion.py --conf
+```
+
+# 3. Train ControlNet Model (Modality)
+
+This script trains the **ControlNet model** (modality) for OCT-MAISI.  
+It handles run directory setup, seed fixing, image discovery/splitting, W&B logging, and kicks off `diff_model_train()`.
+
+## Usage
+
+```bash
+python train_controlnet_modality.py
+```
+
+# 4. Train ControlNet Model (RETOUCH)
+
+This script trains the **ControlNet model** (RETOUCH) for OCT-MAISI.  
+It handles run directory setup, seed fixing, image discovery/splitting, W&B logging, and kicks off `diff_model_train()`.
+
+## Usage
+
+```bash
+python train_controlnet_retouch.py
+```
