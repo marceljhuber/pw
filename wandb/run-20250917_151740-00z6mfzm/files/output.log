@@ -1,0 +1,564 @@
+Training directory set up at: ./runs/DIFFUSION_20250917_1517
+Config contents: dict_keys(['main', 'env_config', 'model', 'model_config', 'vae_def'])
+[2025-09-17 15:17:41.824][ INFO](notebook) - Training the model...
+[2025-09-17 15:17:41.835][ INFO](training) - Using device: cuda
+[2025-09-17 15:17:42.389][ INFO](training) - Training from scratch.
+[2025-09-17 15:17:42.560][ INFO](training) - Scaling factor set to 1.2645225524902344.
+[2025-09-17 15:17:42.747][ INFO](training) - Epoch 1, lr 0.0001
+Epoch 1: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.95it/s, loss=0.4363, lr=9.98e-05]
+2025-09-17 15:18:09,503 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_0/0_val_00_seed42_20250917_1518.png
+2025-09-17 15:18:24,025 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_0/0_val_01_seed43_20250917_1518.png
+Validation images for epoch 0 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_0
+[2025-09-17 15:18:24.391][ INFO](training) - Epoch 2, lr 9.979936273198903e-05
+Epoch 2: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.37it/s, loss=0.2387, lr=9.96e-05]
+2025-09-17 15:18:50,585 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_1/0_val_00_seed42_20250917_1518.png
+2025-09-17 15:19:05,287 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_1/0_val_01_seed43_20250917_1519.png
+Validation images for epoch 1 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_1
+[2025-09-17 15:19:05.313][ INFO](training) - Epoch 3, lr 9.95989269427159e-05
+Epoch 3: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.38it/s, loss=0.2140, lr=9.94e-05]
+2025-09-17 15:19:31,982 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_2/0_val_00_seed42_20250917_1519.png
+2025-09-17 15:19:46,923 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_2/0_val_01_seed43_20250917_1519.png
+Validation images for epoch 2 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_2
+[2025-09-17 15:19:46.936][ INFO](training) - Epoch 4, lr 9.939869263218071e-05
+Epoch 4: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.06it/s, loss=0.3074, lr=9.92e-05]
+2025-09-17 15:20:14,287 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_3/0_val_00_seed42_20250917_1520.png
+2025-09-17 15:20:29,392 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_3/0_val_01_seed43_20250917_1520.png
+Validation images for epoch 3 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_3
+[2025-09-17 15:20:29.412][ INFO](training) - Epoch 5, lr 9.91986598003836e-05
+Epoch 5: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.06it/s, loss=0.2159, lr=9.90e-05]
+2025-09-17 15:20:56,637 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_4/0_val_00_seed42_20250917_1520.png
+2025-09-17 15:21:11,538 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_4/0_val_01_seed43_20250917_1521.png
+Validation images for epoch 4 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_4
+[2025-09-17 15:21:11.550][ INFO](training) - Epoch 6, lr 9.899882844732469e-05
+Epoch 6: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.89it/s, loss=0.0883, lr=9.88e-05]
+2025-09-17 15:21:39,264 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_5/0_val_00_seed42_20250917_1521.png
+2025-09-17 15:21:54,483 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_5/0_val_01_seed43_20250917_1521.png
+Validation images for epoch 5 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_5
+[2025-09-17 15:21:54.498][ INFO](training) - Epoch 7, lr 9.879919857300392e-05
+Epoch 7: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.15it/s, loss=0.1414, lr=9.86e-05]
+2025-09-17 15:22:21,609 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_6/0_val_00_seed42_20250917_1522.png
+2025-09-17 15:22:36,420 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_6/0_val_01_seed43_20250917_1522.png
+Validation images for epoch 6 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_6
+[2025-09-17 15:22:36.432][ INFO](training) - Epoch 8, lr 9.859977017742113e-05
+Epoch 8: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.28it/s, loss=0.2344, lr=9.84e-05]
+2025-09-17 15:23:03,083 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_7/0_val_00_seed42_20250917_1523.png
+2025-09-17 15:23:17,721 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_7/0_val_01_seed43_20250917_1523.png
+Validation images for epoch 7 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_7
+[2025-09-17 15:23:17.737][ INFO](training) - Epoch 9, lr 9.840054326057625e-05
+Epoch 9: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.28it/s, loss=0.1515, lr=9.82e-05]
+2025-09-17 15:23:44,496 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_8/0_val_00_seed42_20250917_1523.png
+2025-09-17 15:23:59,047 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_8/0_val_01_seed43_20250917_1523.png
+Validation images for epoch 8 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_8
+[2025-09-17 15:23:59.068][ INFO](training) - Epoch 10, lr 9.820151782246963e-05
+Epoch 10: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.35it/s, loss=0.2576, lr=9.80e-05]
+2025-09-17 15:24:25,577 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_9/0_val_00_seed42_20250917_1524.png
+2025-09-17 15:24:40,334 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_9/0_val_01_seed43_20250917_1524.png
+Validation images for epoch 9 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_9
+[2025-09-17 15:24:40.355][ INFO](training) - Epoch 11, lr 9.800269386310093e-05
+Epoch 11: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.31it/s, loss=0.1964, lr=9.78e-05]
+2025-09-17 15:25:07,238 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_10/0_val_00_seed42_20250917_1525.png
+2025-09-17 15:25:21,954 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_10/0_val_01_seed43_20250917_1525.png
+Validation images for epoch 10 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_10
+[2025-09-17 15:25:21.969][ INFO](training) - Epoch 12, lr 9.780407138247021e-05
+Epoch 12: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.47it/s, loss=0.1508, lr=9.76e-05]
+2025-09-17 15:25:48,332 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_11/0_val_00_seed42_20250917_1525.png
+2025-09-17 15:26:03,142 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_11/0_val_01_seed43_20250917_1526.png
+Validation images for epoch 11 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_11
+[2025-09-17 15:26:03.161][ INFO](training) - Epoch 13, lr 9.760565038057746e-05
+Epoch 13: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.09it/s, loss=0.1752, lr=9.74e-05]
+2025-09-17 15:26:29,884 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_12/0_val_00_seed42_20250917_1526.png
+2025-09-17 15:26:44,664 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_12/0_val_01_seed43_20250917_1526.png
+Validation images for epoch 12 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_12
+[2025-09-17 15:26:44.679][ INFO](training) - Epoch 14, lr 9.740743085742279e-05
+Epoch 14: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.30it/s, loss=0.3776, lr=9.72e-05]
+2025-09-17 15:27:11,388 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_13/0_val_00_seed42_20250917_1527.png
+2025-09-17 15:27:26,003 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_13/0_val_01_seed43_20250917_1527.png
+Validation images for epoch 13 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_13
+[2025-09-17 15:27:26.016][ INFO](training) - Epoch 15, lr 9.720941281300615e-05
+Epoch 15: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.45it/s, loss=0.1394, lr=9.70e-05]
+2025-09-17 15:27:52,431 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_14/0_val_00_seed42_20250917_1527.png
+2025-09-17 15:28:07,092 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_14/0_val_01_seed43_20250917_1528.png
+Validation images for epoch 14 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_14
+[2025-09-17 15:28:07.110][ INFO](training) - Epoch 16, lr 9.701159624732756e-05
+Epoch 16: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.74it/s, loss=0.2296, lr=9.68e-05]
+2025-09-17 15:28:33,110 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_15/0_val_00_seed42_20250917_1528.png
+2025-09-17 15:28:47,625 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_15/0_val_01_seed43_20250917_1528.png
+Validation images for epoch 15 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_15
+[2025-09-17 15:28:47.643][ INFO](training) - Epoch 17, lr 9.681398116038691e-05
+Epoch 17: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.52it/s, loss=0.2731, lr=9.66e-05]
+2025-09-17 15:29:14,260 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_16/0_val_00_seed42_20250917_1529.png
+2025-09-17 15:29:29,106 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_16/0_val_01_seed43_20250917_1529.png
+Validation images for epoch 16 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_16
+[2025-09-17 15:29:29.123][ INFO](training) - Epoch 18, lr 9.661656755218443e-05
+Epoch 18: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.25it/s, loss=0.2896, lr=9.64e-05]
+2025-09-17 15:29:55,627 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_17/0_val_00_seed42_20250917_1529.png
+2025-09-17 15:30:10,346 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_17/0_val_01_seed43_20250917_1530.png
+Validation images for epoch 17 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_17
+[2025-09-17 15:30:10.366][ INFO](training) - Epoch 19, lr 9.641935542271993e-05
+Epoch 19: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.39it/s, loss=0.3229, lr=9.62e-05]
+2025-09-17 15:30:36,928 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_18/0_val_00_seed42_20250917_1530.png
+2025-09-17 15:30:51,610 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_18/0_val_01_seed43_20250917_1530.png
+Validation images for epoch 18 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_18
+[2025-09-17 15:30:51.626][ INFO](training) - Epoch 20, lr 9.622234477199367e-05
+Epoch 20: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.44it/s, loss=0.1572, lr=9.60e-05]
+2025-09-17 15:31:18,252 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_19/0_val_00_seed42_20250917_1531.png
+2025-09-17 15:31:33,007 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_19/0_val_01_seed43_20250917_1531.png
+Validation images for epoch 19 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_19
+[2025-09-17 15:31:33.029][ INFO](training) - Epoch 21, lr 9.602553560000532e-05
+Epoch 21: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.46it/s, loss=0.2829, lr=9.58e-05]
+2025-09-17 15:31:59,562 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_20/0_val_00_seed42_20250917_1531.png
+2025-09-17 15:32:13,957 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_20/0_val_01_seed43_20250917_1532.png
+Validation images for epoch 20 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_20
+[2025-09-17 15:32:13.974][ INFO](training) - Epoch 22, lr 9.582892790675496e-05
+Epoch 22: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.46it/s, loss=0.2021, lr=9.56e-05]
+2025-09-17 15:32:40,250 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_21/0_val_00_seed42_20250917_1532.png
+2025-09-17 15:32:54,958 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_21/0_val_01_seed43_20250917_1532.png
+Validation images for epoch 21 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_21
+[2025-09-17 15:32:54.974][ INFO](training) - Epoch 23, lr 9.563252169224266e-05
+Epoch 23: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.45it/s, loss=0.1152, lr=9.54e-05]
+2025-09-17 15:33:21,330 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_22/0_val_00_seed42_20250917_1533.png
+2025-09-17 15:33:35,945 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_22/0_val_01_seed43_20250917_1533.png
+Validation images for epoch 22 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_22
+[2025-09-17 15:33:35.963][ INFO](training) - Epoch 24, lr 9.543631695646825e-05
+Epoch 24: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.34it/s, loss=0.2561, lr=9.52e-05]
+2025-09-17 15:34:02,614 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_23/0_val_00_seed42_20250917_1534.png
+2025-09-17 15:34:17,215 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_23/0_val_01_seed43_20250917_1534.png
+Validation images for epoch 23 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_23
+[2025-09-17 15:34:17.231][ INFO](training) - Epoch 25, lr 9.524031369943206e-05
+Epoch 25: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.50it/s, loss=0.3626, lr=9.50e-05]
+2025-09-17 15:34:43,878 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_24/0_val_00_seed42_20250917_1534.png
+2025-09-17 15:34:58,664 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_24/0_val_01_seed43_20250917_1534.png
+Validation images for epoch 24 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_24
+[2025-09-17 15:34:58.676][ INFO](training) - Epoch 26, lr 9.50445119211339e-05
+Epoch 26: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.44it/s, loss=0.2210, lr=9.48e-05]
+2025-09-17 15:35:24,861 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_25/0_val_00_seed42_20250917_1535.png
+2025-09-17 15:35:39,575 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_25/0_val_01_seed43_20250917_1535.png
+Validation images for epoch 25 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_25
+[2025-09-17 15:35:39.590][ INFO](training) - Epoch 27, lr 9.484891162157366e-05
+Epoch 27: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.36it/s, loss=0.1329, lr=9.47e-05]
+2025-09-17 15:36:06,180 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_26/0_val_00_seed42_20250917_1536.png
+2025-09-17 15:36:20,433 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_26/0_val_01_seed43_20250917_1536.png
+Validation images for epoch 26 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_26
+[2025-09-17 15:36:20.447][ INFO](training) - Epoch 28, lr 9.465351280075159e-05
+Epoch 28: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.34it/s, loss=0.1817, lr=9.45e-05]
+2025-09-17 15:36:47,142 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_27/0_val_00_seed42_20250917_1536.png
+2025-09-17 15:37:01,818 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_27/0_val_01_seed43_20250917_1537.png
+Validation images for epoch 27 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_27
+[2025-09-17 15:37:01.833][ INFO](training) - Epoch 29, lr 9.44583154586674e-05
+Epoch 29: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.24it/s, loss=0.3628, lr=9.43e-05]
+2025-09-17 15:37:28,552 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_28/0_val_00_seed42_20250917_1537.png
+2025-09-17 15:37:43,126 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_28/0_val_01_seed43_20250917_1537.png
+Validation images for epoch 28 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_28
+[2025-09-17 15:37:43.141][ INFO](training) - Epoch 30, lr 9.426331959532124e-05
+Epoch 30: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.27it/s, loss=0.1760, lr=9.41e-05]
+2025-09-17 15:38:09,978 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_29/0_val_00_seed42_20250917_1538.png
+2025-09-17 15:38:24,606 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_29/0_val_01_seed43_20250917_1538.png
+Validation images for epoch 29 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_29
+[2025-09-17 15:38:24.624][ INFO](training) - Epoch 31, lr 9.40685252107133e-05
+Epoch 31: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.32it/s, loss=0.3009, lr=9.39e-05]
+2025-09-17 15:38:51,191 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_30/0_val_00_seed42_20250917_1538.png
+2025-09-17 15:39:06,117 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_30/0_val_01_seed43_20250917_1539.png
+Validation images for epoch 30 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_30
+[2025-09-17 15:39:06.135][ INFO](training) - Epoch 32, lr 9.387393230484333e-05
+Epoch 32: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.38it/s, loss=0.1849, lr=9.37e-05]
+2025-09-17 15:39:32,623 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_31/0_val_00_seed42_20250917_1539.png
+2025-09-17 15:39:47,222 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_31/0_val_01_seed43_20250917_1539.png
+Validation images for epoch 31 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_31
+[2025-09-17 15:39:47.240][ INFO](training) - Epoch 33, lr 9.367954087771124e-05
+Epoch 33: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.34it/s, loss=0.1878, lr=9.35e-05]
+2025-09-17 15:40:14,053 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_32/0_val_00_seed42_20250917_1540.png
+2025-09-17 15:40:28,781 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_32/0_val_01_seed43_20250917_1540.png
+Validation images for epoch 32 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_32
+[2025-09-17 15:40:28.800][ INFO](training) - Epoch 34, lr 9.348535092931725e-05
+Epoch 34: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.39it/s, loss=0.1172, lr=9.33e-05]
+2025-09-17 15:40:55,486 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_33/0_val_00_seed42_20250917_1540.png
+2025-09-17 15:41:10,199 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_33/0_val_01_seed43_20250917_1541.png
+Validation images for epoch 33 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_33
+[2025-09-17 15:41:10.220][ INFO](training) - Epoch 35, lr 9.329136245966134e-05
+Epoch 35: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.48it/s, loss=0.4215, lr=9.31e-05]
+2025-09-17 15:41:36,542 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_34/0_val_00_seed42_20250917_1541.png
+2025-09-17 15:41:51,045 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_34/0_val_01_seed43_20250917_1541.png
+Validation images for epoch 34 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_34
+[2025-09-17 15:41:51.062][ INFO](training) - Epoch 36, lr 9.309757546874347e-05
+Epoch 36: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.44it/s, loss=0.2619, lr=9.29e-05]
+2025-09-17 15:42:17,640 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_35/0_val_00_seed42_20250917_1542.png
+2025-09-17 15:42:32,215 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_35/0_val_01_seed43_20250917_1542.png
+Validation images for epoch 35 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_35
+[2025-09-17 15:42:32.230][ INFO](training) - Epoch 37, lr 9.290398995656356e-05
+Epoch 37: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.23it/s, loss=0.1645, lr=9.27e-05]
+2025-09-17 15:42:58,823 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_36/0_val_00_seed42_20250917_1542.png
+2025-09-17 15:43:13,545 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_36/0_val_01_seed43_20250917_1543.png
+Validation images for epoch 36 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_36
+[2025-09-17 15:43:13.561][ INFO](training) - Epoch 38, lr 9.271060592312183e-05
+Epoch 38: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.42it/s, loss=0.1073, lr=9.25e-05]
+2025-09-17 15:43:39,976 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_37/0_val_00_seed42_20250917_1543.png
+2025-09-17 15:43:54,641 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_37/0_val_01_seed43_20250917_1543.png
+Validation images for epoch 37 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_37
+[2025-09-17 15:43:54.655][ INFO](training) - Epoch 39, lr 9.25174233684183e-05
+Epoch 39: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.86it/s, loss=0.3033, lr=9.23e-05]
+2025-09-17 15:44:22,533 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_38/0_val_00_seed42_20250917_1544.png
+2025-09-17 15:44:37,594 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_38/0_val_01_seed43_20250917_1544.png
+Validation images for epoch 38 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_38
+[2025-09-17 15:44:37.613][ INFO](training) - Epoch 40, lr 9.232444229245253e-05
+Epoch 40: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.99it/s, loss=0.1286, lr=9.21e-05]
+2025-09-17 15:45:04,956 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_39/0_val_00_seed42_20250917_1545.png
+2025-09-17 15:45:20,281 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_39/0_val_01_seed43_20250917_1545.png
+Validation images for epoch 39 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_39
+[2025-09-17 15:45:20.297][ INFO](training) - Epoch 41, lr 9.213166269522479e-05
+Epoch 41: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.00it/s, loss=0.2589, lr=9.19e-05]
+2025-09-17 15:45:47,630 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_40/0_val_00_seed42_20250917_1545.png
+2025-09-17 15:46:02,687 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_40/0_val_01_seed43_20250917_1546.png
+Validation images for epoch 40 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_40
+[2025-09-17 15:46:02.703][ INFO](training) - Epoch 42, lr 9.193908457673506e-05
+Epoch 42: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.98it/s, loss=0.1045, lr=9.17e-05]
+2025-09-17 15:46:30,199 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_41/0_val_00_seed42_20250917_1546.png
+2025-09-17 15:46:44,834 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_41/0_val_01_seed43_20250917_1546.png
+Validation images for epoch 41 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_41
+[2025-09-17 15:46:44.850][ INFO](training) - Epoch 43, lr 9.174670793698338e-05
+Epoch 43: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.15it/s, loss=0.1953, lr=9.16e-05]
+2025-09-17 15:47:11,821 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_42/0_val_00_seed42_20250917_1547.png
+2025-09-17 15:47:26,735 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_42/0_val_01_seed43_20250917_1547.png
+Validation images for epoch 42 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_42
+[2025-09-17 15:47:26.750][ INFO](training) - Epoch 44, lr 9.15545327759698e-05
+Epoch 44: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.98it/s, loss=0.2219, lr=9.14e-05]
+2025-09-17 15:47:54,117 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_43/0_val_00_seed42_20250917_1547.png
+2025-09-17 15:48:09,261 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_43/0_val_01_seed43_20250917_1548.png
+Validation images for epoch 43 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_43
+[2025-09-17 15:48:09.276][ INFO](training) - Epoch 45, lr 9.13625590936943e-05
+Epoch 45: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.44it/s, loss=0.0674, lr=9.12e-05]
+2025-09-17 15:48:36,039 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_44/0_val_00_seed42_20250917_1548.png
+2025-09-17 15:48:51,255 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_44/0_val_01_seed43_20250917_1548.png
+Validation images for epoch 44 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_44
+[2025-09-17 15:48:51.272][ INFO](training) - Epoch 46, lr 9.117078689015676e-05
+Epoch 46: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.43it/s, loss=0.2541, lr=9.10e-05]
+2025-09-17 15:49:18,073 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_45/0_val_00_seed42_20250917_1549.png
+2025-09-17 15:49:33,050 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_45/0_val_01_seed43_20250917_1549.png
+Validation images for epoch 45 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_45
+[2025-09-17 15:49:33.063][ INFO](training) - Epoch 47, lr 9.097921616535731e-05
+Epoch 47: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.73it/s, loss=0.1595, lr=9.08e-05]
+2025-09-17 15:50:00,584 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_46/0_val_00_seed42_20250917_1550.png
+2025-09-17 15:50:15,233 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_46/0_val_01_seed43_20250917_1550.png
+Validation images for epoch 46 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_46
+[2025-09-17 15:50:15.253][ INFO](training) - Epoch 48, lr 9.078784691929583e-05
+Epoch 48: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.25it/s, loss=0.1306, lr=9.06e-05]
+2025-09-17 15:50:42,213 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_47/0_val_00_seed42_20250917_1550.png
+2025-09-17 15:50:57,180 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_47/0_val_01_seed43_20250917_1550.png
+Validation images for epoch 47 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_47
+[2025-09-17 15:50:57.197][ INFO](training) - Epoch 49, lr 9.059667915197246e-05
+Epoch 49: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.29it/s, loss=0.1179, lr=9.04e-05]
+2025-09-17 15:51:24,004 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_48/0_val_00_seed42_20250917_1551.png
+2025-09-17 15:51:39,748 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_48/0_val_01_seed43_20250917_1551.png
+Validation images for epoch 48 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_48
+[2025-09-17 15:51:39.767][ INFO](training) - Epoch 50, lr 9.040571286338701e-05
+Epoch 50: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.42it/s, loss=0.0571, lr=9.02e-05]
+2025-09-17 15:52:08,109 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_49/0_val_00_seed42_20250917_1552.png
+2025-09-17 15:52:23,393 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_49/0_val_01_seed43_20250917_1552.png
+Validation images for epoch 49 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_49
+[2025-09-17 15:52:23.412][ INFO](training) - Epoch 51, lr 9.021494805353956e-05
+Epoch 51: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.48it/s, loss=0.2617, lr=9.00e-05]
+2025-09-17 15:52:51,820 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_50/0_val_00_seed42_20250917_1552.png
+2025-09-17 15:53:07,368 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_50/0_val_01_seed43_20250917_1553.png
+Validation images for epoch 50 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_50
+[2025-09-17 15:53:07.382][ INFO](training) - Epoch 52, lr 9.002438472243024e-05
+Epoch 52: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.58it/s, loss=0.1976, lr=8.98e-05]
+2025-09-17 15:53:35,254 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_51/0_val_00_seed42_20250917_1553.png
+2025-09-17 15:53:50,525 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_51/0_val_01_seed43_20250917_1553.png
+Validation images for epoch 51 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_51
+[2025-09-17 15:53:50.544][ INFO](training) - Epoch 53, lr 8.983402287005904e-05
+Epoch 53: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.09it/s, loss=0.1995, lr=8.96e-05]
+2025-09-17 15:54:17,767 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_52/0_val_00_seed42_20250917_1554.png
+2025-09-17 15:54:32,881 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_52/0_val_01_seed43_20250917_1554.png
+Validation images for epoch 52 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_52
+[2025-09-17 15:54:32.908][ INFO](training) - Epoch 54, lr 8.964386249642574e-05
+Epoch 54: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.65it/s, loss=0.0891, lr=8.95e-05]
+2025-09-17 15:55:00,711 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_53/0_val_00_seed42_20250917_1555.png
+2025-09-17 15:55:16,228 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_53/0_val_01_seed43_20250917_1555.png
+Validation images for epoch 53 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_53
+[2025-09-17 15:55:16.242][ INFO](training) - Epoch 55, lr 8.945390360153057e-05
+Epoch 55: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.77it/s, loss=0.3970, lr=8.93e-05]
+2025-09-17 15:55:43,829 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_54/0_val_00_seed42_20250917_1555.png
+2025-09-17 15:55:59,052 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_54/0_val_01_seed43_20250917_1555.png
+Validation images for epoch 54 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_54
+[2025-09-17 15:55:59.072][ INFO](training) - Epoch 56, lr 8.926414618537344e-05
+Epoch 56: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.31it/s, loss=0.2021, lr=8.91e-05]
+2025-09-17 15:56:26,432 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_55/0_val_00_seed42_20250917_1556.png
+2025-09-17 15:56:41,594 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_55/0_val_01_seed43_20250917_1556.png
+Validation images for epoch 55 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_55
+[2025-09-17 15:56:41.612][ INFO](training) - Epoch 57, lr 8.907459024795442e-05
+Epoch 57: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.28it/s, loss=0.2036, lr=8.89e-05]
+2025-09-17 15:57:08,253 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_56/0_val_00_seed42_20250917_1557.png
+2025-09-17 15:57:23,146 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_56/0_val_01_seed43_20250917_1557.png
+Validation images for epoch 56 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_56
+[2025-09-17 15:57:23.161][ INFO](training) - Epoch 58, lr 8.88852357892733e-05
+Epoch 58: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.49it/s, loss=0.2857, lr=8.87e-05]
+2025-09-17 15:57:49,786 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_57/0_val_00_seed42_20250917_1557.png
+2025-09-17 15:58:04,602 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_57/0_val_01_seed43_20250917_1558.png
+Validation images for epoch 57 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_57
+[2025-09-17 15:58:04.619][ INFO](training) - Epoch 59, lr 8.869608280933023e-05
+Epoch 59: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.38it/s, loss=0.1517, lr=8.85e-05]
+2025-09-17 15:58:31,451 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_58/0_val_00_seed42_20250917_1558.png
+2025-09-17 15:58:47,260 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_58/0_val_01_seed43_20250917_1558.png
+Validation images for epoch 58 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_58
+[2025-09-17 15:58:47.277][ INFO](training) - Epoch 60, lr 8.850713130812511e-05
+Epoch 60: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.01it/s, loss=0.3718, lr=8.83e-05]
+2025-09-17 15:59:14,835 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_59/0_val_00_seed42_20250917_1559.png
+2025-09-17 15:59:29,914 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_59/0_val_01_seed43_20250917_1559.png
+Validation images for epoch 59 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_59
+[2025-09-17 15:59:29.930][ INFO](training) - Epoch 61, lr 8.831838128565803e-05
+Epoch 61: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.27it/s, loss=0.0511, lr=8.81e-05]
+2025-09-17 15:59:56,827 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_60/0_val_00_seed42_20250917_1559.png
+2025-09-17 16:00:11,661 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_60/0_val_01_seed43_20250917_1600.png
+Validation images for epoch 60 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_60
+[2025-09-17 16:00:11.689][ INFO](training) - Epoch 62, lr 8.812983274192894e-05
+Epoch 62: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.28it/s, loss=0.2792, lr=8.79e-05]
+2025-09-17 16:00:38,971 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_61/0_val_00_seed42_20250917_1600.png
+2025-09-17 16:00:54,019 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_61/0_val_01_seed43_20250917_1600.png
+Validation images for epoch 61 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_61
+[2025-09-17 16:00:54.039][ INFO](training) - Epoch 63, lr 8.794148567693802e-05
+Epoch 63: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.49it/s, loss=0.1922, lr=8.78e-05]
+2025-09-17 16:01:20,656 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_62/0_val_00_seed42_20250917_1601.png
+2025-09-17 16:01:35,287 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_62/0_val_01_seed43_20250917_1601.png
+Validation images for epoch 62 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_62
+[2025-09-17 16:01:35.304][ INFO](training) - Epoch 64, lr 8.775334009068504e-05
+Epoch 64: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.43it/s, loss=0.2432, lr=8.76e-05]
+2025-09-17 16:02:02,025 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_63/0_val_00_seed42_20250917_1602.png
+2025-09-17 16:02:16,761 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_63/0_val_01_seed43_20250917_1602.png
+Validation images for epoch 63 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_63
+[2025-09-17 16:02:16.775][ INFO](training) - Epoch 65, lr 8.756539598317014e-05
+Epoch 65: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.18it/s, loss=0.3543, lr=8.74e-05]
+2025-09-17 16:02:43,778 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_64/0_val_00_seed42_20250917_1602.png
+2025-09-17 16:02:59,237 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_64/0_val_01_seed43_20250917_1602.png
+Validation images for epoch 64 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_64
+[2025-09-17 16:02:59.251][ INFO](training) - Epoch 66, lr 8.737765335439329e-05
+Epoch 66: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.52it/s, loss=0.2655, lr=8.72e-05]
+2025-09-17 16:03:25,936 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_65/0_val_00_seed42_20250917_1603.png
+2025-09-17 16:03:41,147 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_65/0_val_01_seed43_20250917_1603.png
+Validation images for epoch 65 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_65
+[2025-09-17 16:03:41.166][ INFO](training) - Epoch 67, lr 8.719011220435456e-05
+Epoch 67: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.86it/s, loss=0.2835, lr=8.70e-05]
+2025-09-17 16:04:08,637 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_66/0_val_00_seed42_20250917_1604.png
+2025-09-17 16:04:23,533 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_66/0_val_01_seed43_20250917_1604.png
+Validation images for epoch 66 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_66
+[2025-09-17 16:04:23.546][ INFO](training) - Epoch 68, lr 8.700277253305389e-05
+Epoch 68: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.18it/s, loss=0.1625, lr=8.68e-05]
+2025-09-17 16:04:50,479 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_67/0_val_00_seed42_20250917_1604.png
+2025-09-17 16:05:05,782 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_67/0_val_01_seed43_20250917_1605.png
+Validation images for epoch 67 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_67
+[2025-09-17 16:05:05.798][ INFO](training) - Epoch 69, lr 8.681563434049112e-05
+Epoch 69: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.24it/s, loss=0.3698, lr=8.66e-05]
+2025-09-17 16:05:32,706 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_68/0_val_00_seed42_20250917_1605.png
+2025-09-17 16:05:47,500 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_68/0_val_01_seed43_20250917_1605.png
+Validation images for epoch 68 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_68
+[2025-09-17 16:05:47.522][ INFO](training) - Epoch 70, lr 8.66286976266663e-05
+Epoch 70: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.38it/s, loss=0.1193, lr=8.64e-05]
+2025-09-17 16:06:13,976 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_69/0_val_00_seed42_20250917_1606.png
+2025-09-17 16:06:28,279 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_69/0_val_01_seed43_20250917_1606.png
+Validation images for epoch 69 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_69
+[2025-09-17 16:06:28.294][ INFO](training) - Epoch 71, lr 8.644196239157975e-05
+Epoch 71: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.23it/s, loss=0.3001, lr=8.63e-05]
+2025-09-17 16:06:55,262 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_70/0_val_00_seed42_20250917_1606.png
+2025-09-17 16:07:09,936 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_70/0_val_01_seed43_20250917_1607.png
+Validation images for epoch 70 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_70
+[2025-09-17 16:07:09.951][ INFO](training) - Epoch 72, lr 8.6255428635231e-05
+Epoch 72: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.54it/s, loss=0.2924, lr=8.61e-05]
+2025-09-17 16:07:36,345 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_71/0_val_00_seed42_20250917_1607.png
+2025-09-17 16:07:50,755 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_71/0_val_01_seed43_20250917_1607.png
+Validation images for epoch 71 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_71
+[2025-09-17 16:07:50.773][ INFO](training) - Epoch 73, lr 8.606909635762044e-05
+Epoch 73: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.44it/s, loss=0.0908, lr=8.59e-05]
+2025-09-17 16:08:17,318 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_72/0_val_00_seed42_20250917_1608.png
+2025-09-17 16:08:32,126 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_72/0_val_01_seed43_20250917_1608.png
+Validation images for epoch 72 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_72
+[2025-09-17 16:08:32.140][ INFO](training) - Epoch 74, lr 8.588296555874796e-05
+Epoch 74: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.38it/s, loss=0.1800, lr=8.57e-05]
+2025-09-17 16:08:59,007 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_73/0_val_00_seed42_20250917_1608.png
+2025-09-17 16:09:13,768 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_73/0_val_01_seed43_20250917_1609.png
+Validation images for epoch 73 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_73
+[2025-09-17 16:09:13.788][ INFO](training) - Epoch 75, lr 8.569703623861343e-05
+Epoch 75: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.44it/s, loss=0.2807, lr=8.55e-05]
+2025-09-17 16:09:40,413 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_74/0_val_00_seed42_20250917_1609.png
+2025-09-17 16:09:55,187 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_74/0_val_01_seed43_20250917_1609.png
+Validation images for epoch 74 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_74
+[2025-09-17 16:09:55.201][ INFO](training) - Epoch 76, lr 8.551130839721699e-05
+Epoch 76: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.47it/s, loss=0.0985, lr=8.53e-05]
+2025-09-17 16:10:21,847 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_75/0_val_00_seed42_20250917_1610.png
+2025-09-17 16:10:36,621 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_75/0_val_01_seed43_20250917_1610.png
+Validation images for epoch 75 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_75
+[2025-09-17 16:10:36.636][ INFO](training) - Epoch 77, lr 8.532578203455849e-05
+Epoch 77: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.49it/s, loss=0.2133, lr=8.51e-05]
+2025-09-17 16:11:03,136 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_76/0_val_00_seed42_20250917_1611.png
+2025-09-17 16:11:17,753 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_76/0_val_01_seed43_20250917_1611.png
+Validation images for epoch 76 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_76
+[2025-09-17 16:11:17.769][ INFO](training) - Epoch 78, lr 8.514045715063792e-05
+Epoch 78: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.52it/s, loss=0.1444, lr=8.50e-05]
+2025-09-17 16:11:44,287 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_77/0_val_00_seed42_20250917_1611.png
+2025-09-17 16:11:59,221 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_77/0_val_01_seed43_20250917_1611.png
+Validation images for epoch 77 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_77
+[2025-09-17 16:11:59.237][ INFO](training) - Epoch 79, lr 8.495533374545558e-05
+Epoch 79: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.43it/s, loss=0.2420, lr=8.48e-05]
+2025-09-17 16:12:25,886 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_78/0_val_00_seed42_20250917_1612.png
+2025-09-17 16:12:40,684 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_78/0_val_01_seed43_20250917_1612.png
+Validation images for epoch 78 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_78
+[2025-09-17 16:12:40.702][ INFO](training) - Epoch 80, lr 8.477041181901108e-05
+Epoch 80: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.35it/s, loss=0.2969, lr=8.46e-05]
+2025-09-17 16:13:07,144 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_79/0_val_00_seed42_20250917_1613.png
+2025-09-17 16:13:21,773 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_79/0_val_01_seed43_20250917_1613.png
+Validation images for epoch 79 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_79
+[2025-09-17 16:13:21.792][ INFO](training) - Epoch 81, lr 8.458569137130486e-05
+Epoch 81: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.35it/s, loss=0.1238, lr=8.44e-05]
+2025-09-17 16:13:48,439 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_80/0_val_00_seed42_20250917_1613.png
+2025-09-17 16:14:03,404 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_80/0_val_01_seed43_20250917_1614.png
+Validation images for epoch 80 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_80
+[2025-09-17 16:14:03.421][ INFO](training) - Epoch 82, lr 8.440117240233651e-05
+Epoch 82: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.10it/s, loss=0.3035, lr=8.42e-05]
+2025-09-17 16:14:30,466 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_81/0_val_00_seed42_20250917_1614.png
+2025-09-17 16:14:45,576 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_81/0_val_01_seed43_20250917_1614.png
+Validation images for epoch 81 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_81
+[2025-09-17 16:14:45.590][ INFO](training) - Epoch 83, lr 8.421685491210647e-05
+Epoch 83: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.56it/s, loss=0.1125, lr=8.40e-05]
+2025-09-17 16:15:12,267 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_82/0_val_00_seed42_20250917_1615.png
+2025-09-17 16:15:26,743 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_82/0_val_01_seed43_20250917_1615.png
+Validation images for epoch 82 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_82
+[2025-09-17 16:15:26.757][ INFO](training) - Epoch 84, lr 8.403273890061433e-05
+Epoch 84: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.32it/s, loss=0.2057, lr=8.38e-05]
+2025-09-17 16:15:53,632 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_83/0_val_00_seed42_20250917_1615.png
+2025-09-17 16:16:08,435 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_83/0_val_01_seed43_20250917_1616.png
+Validation images for epoch 83 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_83
+[2025-09-17 16:16:08.453][ INFO](training) - Epoch 85, lr 8.384882436786012e-05
+Epoch 85: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.52it/s, loss=0.2483, lr=8.37e-05]
+2025-09-17 16:16:35,045 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_84/0_val_00_seed42_20250917_1616.png
+2025-09-17 16:16:49,750 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_84/0_val_01_seed43_20250917_1616.png
+Validation images for epoch 84 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_84
+[2025-09-17 16:16:49.765][ INFO](training) - Epoch 86, lr 8.366511131384405e-05
+Epoch 86: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.53it/s, loss=0.1336, lr=8.35e-05]
+2025-09-17 16:17:16,195 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_85/0_val_00_seed42_20250917_1617.png
+2025-09-17 16:17:31,033 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_85/0_val_01_seed43_20250917_1617.png
+Validation images for epoch 85 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_85
+[2025-09-17 16:17:31.050][ INFO](training) - Epoch 87, lr 8.348159973856592e-05
+Epoch 87: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.78it/s, loss=0.2004, lr=8.33e-05]
+2025-09-17 16:17:57,162 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_86/0_val_00_seed42_20250917_1617.png
+2025-09-17 16:18:11,986 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_86/0_val_01_seed43_20250917_1618.png
+Validation images for epoch 86 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_86
+[2025-09-17 16:18:12.003][ INFO](training) - Epoch 88, lr 8.329828964202586e-05
+Epoch 88: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.36it/s, loss=0.1764, lr=8.31e-05]
+2025-09-17 16:18:38,363 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_87/0_val_00_seed42_20250917_1618.png
+2025-09-17 16:18:52,795 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_87/0_val_01_seed43_20250917_1618.png
+Validation images for epoch 87 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_87
+[2025-09-17 16:18:52.816][ INFO](training) - Epoch 89, lr 8.311518102422382e-05
+Epoch 89: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.45it/s, loss=0.3092, lr=8.29e-05]
+2025-09-17 16:19:19,227 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_88/0_val_00_seed42_20250917_1619.png
+2025-09-17 16:19:33,863 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_88/0_val_01_seed43_20250917_1619.png
+Validation images for epoch 88 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_88
+[2025-09-17 16:19:33.881][ INFO](training) - Epoch 90, lr 8.293227388515978e-05
+Epoch 90: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.33it/s, loss=0.1146, lr=8.27e-05]
+2025-09-17 16:20:00,359 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_89/0_val_00_seed42_20250917_1620.png
+2025-09-17 16:20:14,926 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_89/0_val_01_seed43_20250917_1620.png
+Validation images for epoch 89 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_89
+[2025-09-17 16:20:14.940][ INFO](training) - Epoch 91, lr 8.274956822483363e-05
+Epoch 91: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.40it/s, loss=0.2382, lr=8.26e-05]
+2025-09-17 16:20:41,650 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_90/0_val_00_seed42_20250917_1620.png
+2025-09-17 16:20:56,535 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_90/0_val_01_seed43_20250917_1620.png
+Validation images for epoch 90 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_90
+[2025-09-17 16:20:56.549][ INFO](training) - Epoch 92, lr 8.256706404324563e-05
+Epoch 92: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.36it/s, loss=0.2695, lr=8.24e-05]
+2025-09-17 16:21:23,198 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_91/0_val_00_seed42_20250917_1621.png
+2025-09-17 16:21:37,945 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_91/0_val_01_seed43_20250917_1621.png
+Validation images for epoch 91 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_91
+[2025-09-17 16:21:37.962][ INFO](training) - Epoch 93, lr 8.238476134039568e-05
+Epoch 93: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.49it/s, loss=0.2605, lr=8.22e-05]
+2025-09-17 16:22:04,339 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_92/0_val_00_seed42_20250917_1622.png
+2025-09-17 16:22:19,035 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_92/0_val_01_seed43_20250917_1622.png
+Validation images for epoch 92 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_92
+[2025-09-17 16:22:19.050][ INFO](training) - Epoch 94, lr 8.220266011628379e-05
+Epoch 94: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.54it/s, loss=0.3273, lr=8.20e-05]
+2025-09-17 16:22:45,573 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_93/0_val_00_seed42_20250917_1622.png
+2025-09-17 16:23:00,378 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_93/0_val_01_seed43_20250917_1623.png
+Validation images for epoch 93 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_93
+[2025-09-17 16:23:00.395][ INFO](training) - Epoch 95, lr 8.202076037090978e-05
+Epoch 95: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:10<00:00, 12.80it/s, loss=0.1741, lr=8.18e-05]
+2025-09-17 16:23:26,482 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_94/0_val_00_seed42_20250917_1623.png
+2025-09-17 16:23:41,429 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_94/0_val_01_seed43_20250917_1623.png
+Validation images for epoch 94 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_94
+[2025-09-17 16:23:41.450][ INFO](training) - Epoch 96, lr 8.183906210427403e-05
+Epoch 96: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.68it/s, loss=0.2300, lr=8.17e-05]
+2025-09-17 16:24:09,260 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_95/0_val_00_seed42_20250917_1624.png
+2025-09-17 16:24:24,493 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_95/0_val_01_seed43_20250917_1624.png
+Validation images for epoch 95 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_95
+[2025-09-17 16:24:24.507][ INFO](training) - Epoch 97, lr 8.165756531637622e-05
+Epoch 97: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 11.99it/s, loss=0.2853, lr=8.15e-05]
+2025-09-17 16:24:51,650 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_96/0_val_00_seed42_20250917_1624.png
+2025-09-17 16:25:06,829 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_96/0_val_01_seed43_20250917_1625.png
+Validation images for epoch 96 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_96
+[2025-09-17 16:25:06.842][ INFO](training) - Epoch 98, lr 8.147627000721653e-05
+Epoch 98: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.08it/s, loss=0.2637, lr=8.13e-05]
+2025-09-17 16:25:33,989 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_97/0_val_00_seed42_20250917_1625.png
+2025-09-17 16:25:49,150 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_97/0_val_01_seed43_20250917_1625.png
+Validation images for epoch 97 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_97
+[2025-09-17 16:25:49.167][ INFO](training) - Epoch 99, lr 8.12951761767949e-05
+Epoch 99: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.02it/s, loss=0.2770, lr=8.11e-05]
+2025-09-17 16:26:16,527 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_98/0_val_00_seed42_20250917_1626.png
+2025-09-17 16:26:31,805 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_98/0_val_01_seed43_20250917_1626.png
+Validation images for epoch 98 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_98
+[2025-09-17 16:26:31.821][ INFO](training) - Epoch 100, lr 8.111428382511135e-05
+Epoch 100: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 136/136 [00:11<00:00, 12.01it/s, loss=0.0863, lr=8.09e-05]
+2025-09-17 16:26:59,067 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_99/0_val_00_seed42_20250917_1626.png
+2025-09-17 16:27:14,156 INFO image_writer.py:197 - writing: runs/DIFFUSION_20250917_1517/validation_images/epoch_99/0_val_01_seed43_20250917_1627.png
+Validation images for epoch 99 saved to: ./runs/DIFFUSION_20250917_1517/validation_images/epoch_99
+[2025-09-17 16:27:14.171][ INFO](training) - Epoch 101, lr 8.093359295216583e-05
+Epoch 101:  59%|███████████████████████████████████████████████████████████████████████████▎                                                    | 80/136 [00:06<00:04, 11.85it/s, loss=0.0870, lr=8.08e-05]
+Traceback (most recent call last):
+  File "/home/mhuber/Thesis/GitHub/practicalwork/train_diffusion.py", line 191, in <module>
+  File "/home/mhuber/Thesis/GitHub/practicalwork/train_diffusion.py", line 176, in main
+    start_epoch=start_epoch,
+  File "/home/mhuber/Thesis/GitHub/practicalwork/scripts/diff_model_train.py", line 426, in diff_model_train
+    epoch,
+
+  File "/home/mhuber/Thesis/GitHub/practicalwork/scripts/diff_model_train.py", line 151, in train_one_epoch
+    noise_pred = unet(noisy_latent, timesteps)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/monai/apps/generation/maisi/networks/diffusion_model_unet_maisi.py", line 400, in forward
+    h, _updated_down_block_res_samples = self._apply_down_blocks(h, emb, context, down_block_additional_residuals)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/monai/apps/generation/maisi/networks/diffusion_model_unet_maisi.py", line 344, in _apply_down_blocks
+    h, res_samples = downsample_block(hidden_states=h, temb=emb, context=context)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/monai/networks/nets/diffusion_model_unet.py", line 637, in forward
+    hidden_states = attn(hidden_states).contiguous()
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/monai/networks/blocks/spatialattention.py", line 94, in forward
+    x = self.attn(x)
+        ^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/monai/networks/blocks/selfattention.py", line 178, in forward
+    x = F.scaled_dot_product_attention(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/monai/data/meta_tensor.py", line 282, in __torch_function__
+    ret = super().__torch_function__(func, types, args, kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/_tensor.py", line 1512, in __torch_function__
+    ret = func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

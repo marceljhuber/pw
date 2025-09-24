@@ -1,0 +1,42 @@
+{
+  "os": "Linux-5.15.0-130-generic-x86_64-with-glibc2.31",
+  "python": "CPython 3.11.10",
+  "startedAt": "2025-09-17T11:33:55.206770Z",
+  "args": [
+    "--config",
+    "./configs/config_VAE.json"
+  ],
+  "program": "/home/mhuber/Thesis/GitHub/practicalwork/train_vae.py",
+  "codePath": "train_vae.py",
+  "email": "marceljulianhuber@gmail.com",
+  "root": "/home/mhuber/Thesis/GitHub/practicalwork",
+  "host": "OPTIMAS",
+  "executable": "/home/mhuber/miniconda3/envs/ai/bin/python",
+  "codePathLocal": "train_vae.py",
+  "cpu_count": 8,
+  "cpu_count_logical": 16,
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "987309395968",
+      "used": "880847634432"
+    }
+  },
+  "memory": {
+    "total": "33551523840"
+  },
+  "cpu": {
+    "count": 8,
+    "countLogical": 16
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA GeForce RTX 2080 Ti",
+      "memoryTotal": "11811160064",
+      "cudaCores": 4352,
+      "architecture": "Turing"
+    }
+  ],
+  "cudaVersion": "12.2"
+}

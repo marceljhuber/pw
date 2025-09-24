@@ -1,0 +1,102 @@
+_wandb:
+    value:
+        cli_version: 0.19.4
+        m: []
+        python_version: 3.11.10
+        t:
+            "1":
+                - 1
+                - 41
+                - 48
+                - 49
+                - 55
+            "2":
+                - 1
+                - 41
+                - 48
+                - 49
+                - 55
+            "3":
+                - 13
+                - 16
+                - 23
+                - 55
+            "4": 3.11.10
+            "5": 0.19.4
+            "8":
+                - 5
+            "12": 0.19.4
+            "13": linux-x86_64
+data:
+    value:
+        image_dir: /home/mhuber/Thesis/data/KermanyV3_micro/train
+        train_transform:
+            brightness_adjustment: 0.2
+            contrast_adjustment: 0.2
+            random_crop_scale:
+                - 0.8
+                - 1
+            random_flip_prob: 0.5
+            random_rotation_angle: 10
+            resize:
+                - 256
+                - 256
+            speckle_noise_std: 0.1
+        val_transform:
+            resize:
+                - 256
+                - 256
+main:
+    value:
+        jobname: lima
+        run_dir: ./runs
+model:
+    value:
+        autoencoder:
+            attention_levels:
+                - false
+                - false
+                - false
+            dim_split: 1
+            in_channels: 1
+            latent_channels: 4
+            norm_eps: 1e-06
+            norm_float16: true
+            norm_num_groups: 32
+            num_channels:
+                - 64
+                - 128
+                - 256
+            num_res_blocks:
+                - 2
+                - 2
+                - 2
+            num_splits: 1
+            out_channels: 1
+            spatial_dims: 2
+            use_checkpointing: false
+            use_convtranspose: false
+            with_decoder_nonlocal_attn: false
+            with_encoder_nonlocal_attn: false
+        discriminator:
+            channels: 32
+            in_channels: 1
+            norm: INSTANCE
+            num_layers_d: 3
+            out_channels: 1
+            spatial_dims: 2
+training:
+    value:
+        adv_weight: 0.05
+        amp: true
+        batch_size: 8
+        cache: 0.5
+        epochs: 100
+        kl_weight: 1e-06
+        learning_rate: 0.0001
+        log_interval: 1
+        num_workers: 16
+        perceptual_weight: 0.1
+        recon_loss: l1
+        save_interval: 1
+        val_interval: 1

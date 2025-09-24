@@ -1,0 +1,34 @@
+python train_classifier.py   --data-dir /home/mhuber/Thesis/data/KermanyV3_tiny/train   --test-dir /home/mhuber/Thesis/data/KermanyV3_tiny/test   --run-dir runs/exp1   --arch resnet18 --pretrained   --epochs 10 --batch-size 16 --lr 3e-4 --k-seeds 3
+
+python train_classifier.py   --data-dir /home/mhuber/Thesis/data/KermanyV3/train   --test-dir /home/mhuber/Thesis/data/KermanyV3/test   --run-dir runs/exp2   --arch resnet18 --pretrained   --epochs 10 --batch-size 16 --lr 3e-4 --subset-percent 10 --k-seeds 3
+
+python train_classifier.py   --data-dir /home/mhuber/Thesis/data/KermanyV3/train   --test-dir /home/mhuber/Thesis/data/KermanyV3/test   --run-dir runs/exp3   --arch resnet18 --pretrained   --epochs 10 --batch-size 16 --lr 3e-4 --subset-percent 5 --k-seeds 3
+
+python train_classifier.py   --data-dir /home/mhuber/Thesis/data/KermanyV3/train   --test-dir /home/mhuber/Thesis/data/KermanyV3/test   --run-dir runs/exp4   --arch resnet18 --pretrained   --epochs 10 --batch-size 16 --lr 3e-4 --subset-percent 1 --k-seeds 5
+
+python train_classifier.py   --data-dir /home/mhuber/Thesis/data/KermanyV3/train   --test-dir /home/mhuber/Thesis/data/KermanyV3/test   --run-dir runs/exp5   --arch resnet18 --pretrained   --epochs 10 --batch-size 16 --lr 3e-4 --subset-percent 0.1 --k-seeds 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+python scripts/encode_to_latents.py \
+  --input_dir "/home/mhuber/Thesis/data/KermanyV3_micro/train" \
+  --output_dir ./latents/lima \
+  --autoencoder_path "runs/lima_20250917_1334/model_best.pt"

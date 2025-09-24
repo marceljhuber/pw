@@ -1,0 +1,51 @@
+Found 976 train images.
+Epoch 0:   0%|                                                                                                                                                                     | 0/122 [00:01<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/mhuber/Thesis/GitHub/practicalwork/train_vae.py", line 443, in <module>
+    main()
+  File "/home/mhuber/Thesis/GitHub/practicalwork/train_vae.py", line 334, in main
+    step_losses = train_step(
+                  ^^^^^^^^^^^
+  File "/home/mhuber/Thesis/GitHub/practicalwork/train_vae.py", line 118, in train_step
+    reconstruction, z_mu, z_sigma = autoencoder(images)
+                                    ^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/monai/networks/nets/autoencoderkl.py", line 666, in forward
+    reconstruction = self.decode(z)
+                     ^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/monai/networks/nets/autoencoderkl.py", line 660, in decode
+    dec = self.decoder(z)
+          ^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/Thesis/GitHub/practicalwork/networks/autoencoderkl_maisi.py", line 876, in forward
+    x = block(x)
+        ^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/Thesis/GitHub/practicalwork/networks/autoencoderkl_maisi.py", line 479, in forward
+    h = self.norm1(x)
+        ^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/miniconda3/envs/ai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mhuber/Thesis/GitHub/practicalwork/networks/autoencoderkl_maisi.py", line 93, in forward
+    input.mul_(self.weight.view(1, param_c, 1, 1)).add_(self.bias.view(1, param_c, 1, 1))  # Removed 5th dimension
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 64.00 MiB. GPU 0 has a total capacity of 10.75 GiB of which 67.75 MiB is free. Process 2373305 has 708.00 MiB memory in use. Process 501833 has 652.00 MiB memory in use. Process 4108249 has 652.00 MiB memory in use. Process 75580 has 652.00 MiB memory in use. Process 957942 has 152.00 MiB memory in use. Including non-PyTorch memory, this process has 7.03 GiB memory in use. Of the allocated memory 6.82 GiB is allocated by PyTorch, and 25.53 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

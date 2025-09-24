@@ -1,0 +1,23 @@
+2025-09-17 13:34:25,847 INFO    MainThread:1059925 [wandb_setup.py:_flush():68] Current SDK version is 0.19.4
+2025-09-17 13:34:25,847 INFO    MainThread:1059925 [wandb_setup.py:_flush():68] Configure stats pid to 1059925
+2025-09-17 13:34:25,847 INFO    MainThread:1059925 [wandb_setup.py:_flush():68] Loading settings from /home/mhuber/.config/wandb/settings
+2025-09-17 13:34:25,847 INFO    MainThread:1059925 [wandb_setup.py:_flush():68] Loading settings from /home/mhuber/Thesis/GitHub/practicalwork/wandb/settings
+2025-09-17 13:34:25,847 INFO    MainThread:1059925 [wandb_setup.py:_flush():68] Loading settings from environment variables
+2025-09-17 13:34:25,847 INFO    MainThread:1059925 [wandb_init.py:setup_run_log_directory():624] Logging user logs to /home/mhuber/Thesis/GitHub/practicalwork/wandb/run-20250917_133425-z4jr8sm2/logs/debug.log
+2025-09-17 13:34:25,847 INFO    MainThread:1059925 [wandb_init.py:setup_run_log_directory():625] Logging internal logs to /home/mhuber/Thesis/GitHub/practicalwork/wandb/run-20250917_133425-z4jr8sm2/logs/debug-internal.log
+2025-09-17 13:34:25,847 INFO    MainThread:1059925 [wandb_init.py:init():743] calling init triggers
+2025-09-17 13:34:25,847 INFO    MainThread:1059925 [wandb_init.py:init():748] wandb.init called with sweep_config: {}
+config: {'main': {'run_dir': './runs', 'jobname': 'lima'}, 'training': {'batch_size': 4, 'learning_rate': 0.0001, 'epochs': 100, 'num_workers': 16, 'kl_weight': 1e-06, 'perceptual_weight': 0.1, 'adv_weight': 0.05, 'log_interval': 1, 'save_interval': 1, 'val_interval': 1, 'recon_loss': 'l1', 'amp': True, 'cache': 0.5}, 'model': {'autoencoder': {'spatial_dims': 2, 'in_channels': 1, 'out_channels': 1, 'latent_channels': 4, 'num_channels': [64, 128, 256], 'num_res_blocks': [2, 2, 2], 'norm_num_groups': 32, 'norm_eps': 1e-06, 'attention_levels': [False, False, False], 'with_encoder_nonlocal_attn': False, 'with_decoder_nonlocal_attn': False, 'use_checkpointing': False, 'use_convtranspose': False, 'norm_float16': True, 'num_splits': 1, 'dim_split': 1}, 'discriminator': {'spatial_dims': 2, 'num_layers_d': 3, 'channels': 32, 'in_channels': 1, 'out_channels': 1, 'norm': 'INSTANCE'}}, 'data': {'image_dir': '/home/mhuber/Thesis/data/KermanyV3_micro/train', 'train_transform': {'resize': [256, 256], 'random_crop_scale': [0.8, 1.0], 'random_flip_prob': 0.5, 'random_rotation_angle': 10, 'brightness_adjustment': 0.2, 'contrast_adjustment': 0.2, 'speckle_noise_std': 0.1}, 'val_transform': {'resize': [256, 256]}}}
+2025-09-17 13:34:25,848 INFO    MainThread:1059925 [wandb_init.py:init():776] starting backend
+2025-09-17 13:34:26,053 INFO    MainThread:1059925 [wandb_init.py:init():780] sending inform_init request
+2025-09-17 13:34:26,057 INFO    MainThread:1059925 [backend.py:_multiprocessing_setup():97] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-09-17 13:34:26,057 INFO    MainThread:1059925 [wandb_init.py:init():795] backend started and connected
+2025-09-17 13:34:26,059 INFO    MainThread:1059925 [wandb_init.py:init():888] updated telemetry
+2025-09-17 13:34:26,060 INFO    MainThread:1059925 [wandb_init.py:init():915] communicating run to backend with 90.0 second timeout
+2025-09-17 13:34:26,487 INFO    MainThread:1059925 [wandb_init.py:init():967] starting run threads in backend
+2025-09-17 13:34:26,582 INFO    MainThread:1059925 [wandb_run.py:_console_start():2409] atexit reg
+2025-09-17 13:34:26,583 INFO    MainThread:1059925 [wandb_run.py:_redirect():2259] redirect: wrap_raw
+2025-09-17 13:34:26,583 INFO    MainThread:1059925 [wandb_run.py:_redirect():2324] Wrapping output streams.
+2025-09-17 13:34:26,583 INFO    MainThread:1059925 [wandb_run.py:_redirect():2349] Redirects installed.
+2025-09-17 13:34:26,584 INFO    MainThread:1059925 [wandb_init.py:init():1009] run started, returning control to user process
+2025-09-17 14:11:45,780 WARNING MsgRouterThr:1059925 [router.py:message_loop():75] message_loop has been closed
