@@ -138,10 +138,10 @@ def apply_class_subset(
             pct = float(subset_percent)
             if pct <= 0:
                 k = 0
-            elif pct >= 100:
+            elif pct >= 1.0:
                 k = len(pool)
             else:
-                k = int(round(len(pool) * (pct / 100.0)))
+                k = int(round(len(pool) * pct))
                 if k == 0 and len(pool) > 0:
                     k = 1  # for very small fractions but >0
         selected.extend(pool[:k])
@@ -487,6 +487,7 @@ def run_one_training(
     real_mix = max(0.0, min(1.0, float(real_mix)))
     rng = random.Random(seed)
 
+    # print(len(real_train_items))  # TODO
     real_pool = real_train_items[:]
     rng.shuffle(real_pool)
     syn_pool = syn_train_items[:] if syn_train_items is not None else []
@@ -751,6 +752,7 @@ def main():
 
     all_real_items = discover_images(real_root, classes)
     all_test_items = discover_images(test_root, classes)
+    # print(len(all_real_items), len(all_test_items))  # TODO
 
     # Apply REAL subsetting before splitting
     rng_fixed_real = random.Random(12345)
@@ -779,6 +781,7 @@ def main():
     if len(cw) != 4:
         raise ValueError("--class-weights must provide 4 numbers for classes 0..3")
 
+    # print(len(filtered_real))  # TODO
     # Train/eval K seeds
     for i in range(args.k_seeds):
         seed = args.base_seed + i
