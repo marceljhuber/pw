@@ -37,7 +37,28 @@ from networks.autoencoderkl_maisi import AutoencoderKlMaisi
 ########################################################################################################################
 def load_latents(latents_dir: str) -> list:
     latent_files = sorted(Path(latents_dir).glob("*_latent.pt"))
-    return [{"image": str(f)} for f in latent_files]
+
+    # Define class mapping
+    class_mapping = {"CNV": 0, "DME": 1, "DRUSEN": 2, "NORMAL": 3}
+
+    data_list = []
+    for f in latent_files:
+        filename = f.stem  # Get filename without extension
+
+        # Extract class from filename
+        class_label = None
+        for class_name, class_idx in class_mapping.items():
+            if class_name in filename.upper():
+                class_label = class_idx
+                break
+
+        if class_label is not None:
+            data_list.append({
+                "image": str(f),
+                "class_label": class_label
+            })
+
+    return data_list
 
 
 ########################################################################################################################
@@ -59,12 +80,11 @@ def load_config(config_path):
 
 ########################################################################################################################
 def prepare_data(train_files, device, cache_rate, num_workers=2, batch_size=1):
-    train_transforms = Compose(
-        [
-            monai.transforms.Lambdad(keys=["image"], func=lambda x: torch.load(x)),
-            monai.transforms.EnsureTyped(keys=["image"], dtype=torch.float32),
-        ]
-    )
+    train_transforms = Compose([
+        monai.transforms.Lambdad(keys=["image"], func=lambda x: torch.load(x)),
+        monai.transforms.EnsureTyped(keys=["image"], dtype=torch.float32),
+        monai.transforms.EnsureTyped(keys=["class_label"], dtype=torch.long),
+    ])
 
     train_ds = monai.data.CacheDataset(
         data=train_files,
@@ -76,18 +96,74 @@ def prepare_data(train_files, device, cache_rate, num_workers=2, batch_size=1):
     return DataLoader(train_ds, num_workers=6, batch_size=batch_size, shuffle=True)
 
 
+
 ########################################################################################################################
 def load_unet(
-    args: argparse.Namespace, device: torch.device, logger: logging.Logger
+        args: argparse.Namespace, device: torch.device, logger: logging.Logger
 ) -> torch.nn.Module:
-    unet = define_instance(args, "diffusion_unet_def").to(device)
+    # Check if conditional training is enabled
+    enable_conditional = getattr(args, 'enable_conditional_training', False)
 
-    if not args.trained_unet_path or args.trained_unet_path == "None":
-        logger.info("Training from scratch.")
+    if enable_conditional:
+        logger.info("Loading conditional MAISI UNet...")
+        from networks.conditional_maisi_wrapper import ConditionalMAISIWrapper
+
+        # Get conditional config parameters
+        num_classes = getattr(args, 'num_classes', 4)
+        class_emb_dim = getattr(args, 'class_emb_dim', 64)
+        conditioning_method = getattr(args, 'conditioning_method', 'input_concat')
+
+        unet = ConditionalMAISIWrapper(
+            config_args=args,
+            num_classes=num_classes,
+            class_emb_dim=class_emb_dim,
+            conditioning_method=conditioning_method
+        ).to(device)
+
+        # Load pretrained weights for conditional model
+        if args.trained_unet_path and args.trained_unet_path != "None":
+            checkpoint_unet = torch.load(args.trained_unet_path, map_location=device)
+
+            if "unet_state_dict" in checkpoint_unet:
+                # Try to load base UNet weights
+                base_state_dict = {}
+                wrapper_state_dict = {}
+
+                for key, value in checkpoint_unet["unet_state_dict"].items():
+                    if key.startswith('base_unet.'):
+                        base_state_dict[key[10:]] = value  # Remove 'base_unet.' prefix
+                    elif key.startswith('class_embedding') or key.startswith('class_proj'):
+                        wrapper_state_dict[key] = value
+                    else:
+                        base_state_dict[key] = value
+
+                # Load base UNet weights
+                unet.base_unet.load_state_dict(base_state_dict, strict=False)
+
+                # Load wrapper-specific weights if available
+                if wrapper_state_dict:
+                    unet.load_state_dict(wrapper_state_dict, strict=False)
+                    logger.info(f"Loaded conditional checkpoint {args.trained_unet_path}")
+                else:
+                    logger.info(
+                        f"Loaded base UNet weights from {args.trained_unet_path}, training conditional layers from scratch")
+            else:
+                logger.warning(f"No 'unet_state_dict' found in {args.trained_unet_path}")
+        else:
+            logger.info("Training conditional model from scratch.")
+
     else:
-        checkpoint_unet = torch.load(args.trained_unet_path, map_location=device)
-        unet.load_state_dict(checkpoint_unet["unet_state_dict"], strict=True)
-        logger.info(f"Pretrained checkpoint {args.trained_unet_path} loaded.")
+        logger.info("Loading standard (unconditional) MAISI UNet...")
+
+        unet = define_instance(args, "diffusion_unet_def").to(device)
+
+        # Load pretrained weights for unconditional model
+        if args.trained_unet_path and args.trained_unet_path != "None":
+            checkpoint_unet = torch.load(args.trained_unet_path, map_location=device)
+            unet.load_state_dict(checkpoint_unet["unet_state_dict"], strict=True)
+            logger.info(f"Loaded unconditional checkpoint {args.trained_unet_path}")
+        else:
+            logger.info("Training unconditional model from scratch.")
 
     return unet
 
@@ -119,19 +195,9 @@ def create_lr_scheduler(
 
 ########################################################################################################################
 def train_one_epoch(
-    epoch,
-    unet,
-    train_loader,
-    optimizer,
-    lr_scheduler,
-    loss_pt,
-    scaler,
-    scale_factor,
-    noise_scheduler,
-    num_train_timesteps,
-    device,
-    logger,
-    amp=True,
+    epoch, unet, train_loader, optimizer, lr_scheduler, loss_pt, scaler,
+    scale_factor, noise_scheduler, num_train_timesteps, device, logger,
+    amp=True, is_conditional=False
 ):
     logger.info(f"Epoch {epoch + 1}, lr {optimizer.param_groups[0]['lr']}")
     loss_torch = torch.zeros(2, dtype=torch.float, device=device)
@@ -142,13 +208,25 @@ def train_one_epoch(
             optimizer.zero_grad(set_to_none=True)
             latents = train_data["image"].squeeze(1).to(device) * scale_factor
 
+            # Handle class labels only for conditional training
+            if is_conditional and "class_label" in train_data:
+                class_labels = train_data["class_label"].to(device)
+            else:
+                class_labels = None
+
             with autocast("cuda", enabled=amp):
                 noise = torch.randn_like(latents, device=device)
                 timesteps = torch.randint(
                     0, num_train_timesteps, (latents.shape[0],), device=device
                 )
                 noisy_latent = noise_scheduler.add_noise(latents, noise, timesteps)
-                noise_pred = unet(noisy_latent, timesteps)
+
+                # Forward pass - conditional or unconditional
+                if is_conditional:
+                    noise_pred = unet(noisy_latent, timesteps, class_labels=class_labels)
+                else:
+                    noise_pred = unet(noisy_latent, timesteps)
+
                 loss = loss_pt(noise_pred.float(), noise.float())
 
             if amp:

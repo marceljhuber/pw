@@ -92,7 +92,7 @@ def parse_args():
     parser.add_argument(
         "--config",
         type=str,
-        default="./configs/config_DIFF_v1.json",
+        default="./configs/config_DIFF.json",
         help="Path to configuration file",
     )
     parser.add_argument(

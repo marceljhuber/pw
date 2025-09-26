@@ -1,9 +1,15 @@
 {
     "main": {
+        "enable_conditional_training": true,
         "image_dir": "/home/mhuber/Thesis/data/KermanyV3_micro/train",
         "latents_path": "./latents/lima/train",
         "trained_autoencoder_path": "./runs/lima/model_best.pt",
         "trained_unet_path": null
+    },
+    "conditional_config": {
+    "num_classes": 4,
+    "class_emb_dim": 64,
+    "conditioning_method": "input_concat"
     },
     "env_config": {
         "data_base_dir": "./data",
