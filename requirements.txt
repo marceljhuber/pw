@@ -12,12 +12,10 @@ async-lru==2.0.4
 attrs==24.3.0
 babel==2.16.0
 beautifulsoup4==4.12.3
-black @ file:///croot/black_1737659122412/work
 bleach==6.2.0
 certifi==2024.12.14
 cffi==1.17.1
 charset-normalizer==3.4.0
-click @ file:///croot/click_1744271578095/work
 colormath==3.0.0
 comm==0.2.2
 contourpy==1.3.1
@@ -78,7 +76,6 @@ monai==1.4.0
 monai-weekly==1.5.dev2450
 mpldatacursor==0.7.1
 mpmath==1.3.0
-mypy-extensions @ file:///croot/mypy_extensions_1695130926492/work
 nbclient==0.10.1
 nbconvert==7.16.4
 nbformat==5.10.4
@@ -103,14 +100,11 @@ nvidia-nvtx-cu12==12.4.127
 opencv-python==4.11.0.86
 opencv-python-headless==4.11.0.86
 overrides==7.7.0
-packaging @ file:///croot/packaging_1734472117206/work
 pandas==2.2.3
 pandocfilters==1.5.1
 parso==0.8.4
-pathspec @ file:///work/ci_py311_2/pathspec_1679337288229/work
 pexpect==4.9.0
 pillow==11.0.0
-platformdirs @ file:///croot/platformdirs_1744273042065/work
 prometheus_client==0.21.1
 prompt_toolkit==3.0.48
 protobuf==5.29.1

@@ -57,6 +57,8 @@ def load_latents(latents_dir: str) -> list:
                 "image": str(f),
                 "class_label": class_label
             })
+        else:
+            raise FileNotFoundError(f"No class label for {f}")
 
     return data_list
 
@@ -514,6 +516,7 @@ def diff_model_train(
             device,
             logger,
             amp=amp,
+            is_conditional=args.enable_conditional_training,
         )
 
         loss_torch = loss_torch.tolist()

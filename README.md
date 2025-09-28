@@ -31,7 +31,7 @@ It handles run directory setup, seed fixing, image discovery/splitting, W&B logg
 ## Usage
 
 ```bash
-python train_diffusion.py --conf
+python train_diffusion.py
 ```
 
 # 3. Train ControlNet Model (Modality)

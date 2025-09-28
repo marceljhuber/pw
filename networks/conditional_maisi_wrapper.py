@@ -216,31 +216,63 @@ class ConditionalMAISIWrapper(nn.Module):
 
     def load_pretrained_base_weights(self, checkpoint_path, strict=False):
         """
-        Load pretrained weights for the base MAISI UNet
-
-        Args:
-            checkpoint_path: Path to checkpoint file
-            strict: Whether to strictly enforce state dict keys
+        Load pretrained weights with proper handling of modified conv_in layer
         """
-        checkpoint = torch.load(checkpoint_path, map_location='cpu')
+        checkpoint = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
 
-        # Extract base UNet state dict
         if 'unet_state_dict' in checkpoint:
             base_state_dict = {}
+            original_conv_in_weight = None
+
             for key, value in checkpoint['unet_state_dict'].items():
                 if not key.startswith('class_embedding') and not key.startswith('class_proj'):
+                    # Handle conv_in layer specially for input concatenation
+                    if key == 'conv_in.conv.weight' and self.conditioning_method == 'input_concat':
+                        original_conv_in_weight = value
+                        print(f"🔧 Found original conv_in weight shape: {value.shape}")
+                        continue
+                    elif key.startswith('conv_in.') and self.conditioning_method == 'input_concat':
+                        # Skip other conv_in weights as we modified this layer
+                        continue
+
                     base_state_dict[key] = value
 
-            # Try to load, ignoring conv_in layer if it has different input channels
+            # Load everything except conv_in
             missing_keys, unexpected_keys = self.base_unet.load_state_dict(base_state_dict, strict=False)
 
-            if missing_keys or unexpected_keys:
-                print(f"⚠️  Loading with missing keys: {missing_keys}")
-                print(f"⚠️  Loading with unexpected keys: {unexpected_keys}")
+            # Initialize modified conv_in with original weights + zeros
+            if original_conv_in_weight is not None and self.conditioning_method == 'input_concat':
+                self._initialize_modified_conv_in(original_conv_in_weight)
 
             print(f"✅ Loaded pretrained base UNet weights from {checkpoint_path}")
-        else:
-            print(f"⚠️  Warning: No 'unet_state_dict' found in {checkpoint_path}")
+
+    def _initialize_modified_conv_in(self, original_conv_weight):
+        """Initialize modified conv_in layer with original weights + zero padding"""
+        print("🎯 Initializing modified conv_in layer...")
+
+        # Find the conv layer in the modified conv_in block
+        conv_layer = None
+        for module in self.base_unet.conv_in:
+            if isinstance(module, (nn.Conv2d, nn.Conv3d)):
+                conv_layer = module
+                break
+
+        if conv_layer is None:
+            print("⚠️ Warning: Could not find conv layer in conv_in block")
+            return
+
+        original_in_channels = original_conv_weight.shape[1]
+        new_in_channels = conv_layer.in_channels
+
+        print(f"📊 Original channels: {original_in_channels}, New channels: {new_in_channels}")
+
+        with torch.no_grad():
+            # Copy original weights to first channels
+            conv_layer.weight[:, :original_in_channels] = original_conv_weight
+            # Zero-initialize the new class embedding channels
+            conv_layer.weight[:, original_in_channels:] = 0.0
+
+            print("✅ Successfully initialized conv_in with original + zero-padded weights")
 
 
 def create_conditional_maisi_unet(config_args, num_classes=4, class_emb_dim=64,

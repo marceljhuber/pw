@@ -284,7 +284,7 @@ def main():
 
     # Setup directories
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-    run_dir = Path(f"./runs/{config['main']['jobname']}_{timestamp}")
+    run_dir = Path(f"./runs/VAE/{config['main']['jobname']}_{timestamp}")
     run_dir.mkdir(parents=True, exist_ok=True)
     recon_dir = run_dir / "reconstructions"
     recon_dir.mkdir(exist_ok=True)
