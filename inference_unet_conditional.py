@@ -310,7 +310,7 @@ def conditional_sample_batch(
     latent_shape,
     num_inference_steps=1000,
     guidance_scale=7.5,
-    use_cfg=True,
+    use_cfg=False,
 ):
     """Generate a batch of images with class conditioning - pure float32"""
     recon_model = ReconModel(autoencoder=autoencoder, scale_factor=scale_factor).to(
@@ -338,7 +338,7 @@ def conditional_sample_batch(
     noise_scheduler.set_timesteps(num_inference_steps)
 
     # Denoising loop
-    for t in tqdm(noise_scheduler.timesteps, desc="Denoising"):
+    for t in noise_scheduler.timesteps:
         timestep_tensor = t.unsqueeze(0).expand(batch_size).to(device)
 
         with torch.no_grad():
@@ -410,7 +410,7 @@ def generate_images_for_class(
     batch_size = min(args.batch_size, num_samples)
     generated_images = []
 
-    for i in range(0, num_samples, batch_size):
+    for i in tqdm(range(0, num_samples, batch_size)):
         current_batch_size = min(batch_size, num_samples - i)
 
         if class_idx is None:
@@ -420,9 +420,9 @@ def generate_images_for_class(
 
         current_latent_shape = [current_batch_size] + latent_shape[1:]
 
-        logger.info(
-            f"Generating batch {i//batch_size + 1}/{(num_samples + batch_size - 1)//batch_size}"
-        )
+        # logger.info(
+        #     f"Generating batch {i//batch_size + 1}/{(num_samples + batch_size - 1)//batch_size}"
+        # )
 
         try:
             # Generate images
@@ -465,7 +465,7 @@ def generate_images_for_class(
 
                 generated_images.append(image)
 
-            logger.info(f"✅ Successfully generated batch {i//batch_size + 1}")
+            # logger.info(f"✅ Successfully generated batch {i//batch_size + 1}")
 
         except Exception as e:
             logger.error(f"❌ Error generating batch {i//batch_size + 1}: {e}")

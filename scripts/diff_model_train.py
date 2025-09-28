@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import random
 from pathlib import Path
 
 import monai
@@ -53,10 +54,7 @@ def load_latents(latents_dir: str) -> list:
                 break
 
         if class_label is not None:
-            data_list.append({
-                "image": str(f),
-                "class_label": class_label
-            })
+            data_list.append({"image": str(f), "class_label": class_label})
         else:
             raise FileNotFoundError(f"No class label for {f}")
 
@@ -82,11 +80,13 @@ def load_config(config_path):
 
 ########################################################################################################################
 def prepare_data(train_files, device, cache_rate, num_workers=2, batch_size=1):
-    train_transforms = Compose([
-        monai.transforms.Lambdad(keys=["image"], func=lambda x: torch.load(x)),
-        monai.transforms.EnsureTyped(keys=["image"], dtype=torch.float32),
-        monai.transforms.EnsureTyped(keys=["class_label"], dtype=torch.long),
-    ])
+    train_transforms = Compose(
+        [
+            monai.transforms.Lambdad(keys=["image"], func=lambda x: torch.load(x)),
+            monai.transforms.EnsureTyped(keys=["image"], dtype=torch.float32),
+            monai.transforms.EnsureTyped(keys=["class_label"], dtype=torch.long),
+        ]
+    )
 
     train_ds = monai.data.CacheDataset(
         data=train_files,
@@ -98,28 +98,27 @@ def prepare_data(train_files, device, cache_rate, num_workers=2, batch_size=1):
     return DataLoader(train_ds, num_workers=6, batch_size=batch_size, shuffle=True)
 
 
-
 ########################################################################################################################
 def load_unet(
-        args: argparse.Namespace, device: torch.device, logger: logging.Logger
+    args: argparse.Namespace, device: torch.device, logger: logging.Logger
 ) -> torch.nn.Module:
     # Check if conditional training is enabled
-    enable_conditional = getattr(args, 'enable_conditional_training', False)
+    enable_conditional = getattr(args, "enable_conditional_training", False)
 
     if enable_conditional:
         logger.info("Loading conditional MAISI UNet...")
         from networks.conditional_maisi_wrapper import ConditionalMAISIWrapper
 
         # Get conditional config parameters
-        num_classes = getattr(args, 'num_classes', 4)
-        class_emb_dim = getattr(args, 'class_emb_dim', 64)
-        conditioning_method = getattr(args, 'conditioning_method', 'input_concat')
+        num_classes = getattr(args, "num_classes", 4)
+        class_emb_dim = getattr(args, "class_emb_dim", 64)
+        conditioning_method = getattr(args, "conditioning_method", "input_concat")
 
         unet = ConditionalMAISIWrapper(
             config_args=args,
             num_classes=num_classes,
             class_emb_dim=class_emb_dim,
-            conditioning_method=conditioning_method
+            conditioning_method=conditioning_method,
         ).to(device)
 
         # Load pretrained weights for conditional model
@@ -132,9 +131,11 @@ def load_unet(
                 wrapper_state_dict = {}
 
                 for key, value in checkpoint_unet["unet_state_dict"].items():
-                    if key.startswith('base_unet.'):
+                    if key.startswith("base_unet."):
                         base_state_dict[key[10:]] = value  # Remove 'base_unet.' prefix
-                    elif key.startswith('class_embedding') or key.startswith('class_proj'):
+                    elif key.startswith("class_embedding") or key.startswith(
+                        "class_proj"
+                    ):
                         wrapper_state_dict[key] = value
                     else:
                         base_state_dict[key] = value
@@ -145,12 +146,17 @@ def load_unet(
                 # Load wrapper-specific weights if available
                 if wrapper_state_dict:
                     unet.load_state_dict(wrapper_state_dict, strict=False)
-                    logger.info(f"Loaded conditional checkpoint {args.trained_unet_path}")
+                    logger.info(
+                        f"Loaded conditional checkpoint {args.trained_unet_path}"
+                    )
                 else:
                     logger.info(
-                        f"Loaded base UNet weights from {args.trained_unet_path}, training conditional layers from scratch")
+                        f"Loaded base UNet weights from {args.trained_unet_path}, training conditional layers from scratch"
+                    )
             else:
-                logger.warning(f"No 'unet_state_dict' found in {args.trained_unet_path}")
+                logger.warning(
+                    f"No 'unet_state_dict' found in {args.trained_unet_path}"
+                )
         else:
             logger.info("Training conditional model from scratch.")
 
@@ -197,9 +203,21 @@ def create_lr_scheduler(
 
 ########################################################################################################################
 def train_one_epoch(
-    epoch, unet, train_loader, optimizer, lr_scheduler, loss_pt, scaler,
-    scale_factor, noise_scheduler, num_train_timesteps, device, logger,
-    amp=True, is_conditional=False
+    epoch,
+    unet,
+    train_loader,
+    optimizer,
+    lr_scheduler,
+    loss_pt,
+    scaler,
+    scale_factor,
+    noise_scheduler,
+    num_train_timesteps,
+    device,
+    logger,
+    args,
+    amp=True,
+    is_conditional=False,
 ):
     logger.info(f"Epoch {epoch + 1}, lr {optimizer.param_groups[0]['lr']}")
     loss_torch = torch.zeros(2, dtype=torch.float, device=device)
@@ -223,9 +241,17 @@ def train_one_epoch(
                 )
                 noisy_latent = noise_scheduler.add_noise(latents, noise, timesteps)
 
-                # Forward pass - conditional or unconditional
-                if is_conditional:
-                    noise_pred = unet(noisy_latent, timesteps, class_labels=class_labels)
+                if args.use_cfg:
+                    # CFG training (NOT in your code)
+                    if random.random() < 0.15:  # 15% dropout rate
+                        class_labels = None  # Drop conditioning
+                    noise_pred = unet(
+                        noisy_latent, timesteps, class_labels=class_labels
+                    )
+                elif is_conditional:
+                    noise_pred = unet(
+                        noisy_latent, timesteps, class_labels=class_labels
+                    )
                 else:
                     noise_pred = unet(noisy_latent, timesteps)
 
@@ -515,6 +541,7 @@ def diff_model_train(
             args.noise_scheduler["num_train_timesteps"],
             device,
             logger,
+            args,
             amp=amp,
             is_conditional=args.enable_conditional_training,
         )

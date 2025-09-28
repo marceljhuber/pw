@@ -1,6 +1,7 @@
 {
     "main": {
         "enable_conditional_training": true,
+        "use_cfg": true,
         "image_dir": "/home/user/Thesis/data/KermanyV3_resized/train",
         "latents_path": "/home/user/Thesis/data/latents/KermanyV3_resized/train",
         "trained_autoencoder_path": "./runs/lima/lima_best.pt",
