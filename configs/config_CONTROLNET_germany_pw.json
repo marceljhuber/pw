@@ -1,33 +1,33 @@
 {
     "main": {
-        "image_dir": "/home/mhuber/Thesis/data/KermanyV3_resized/train",
-        "jobname": "america",
+        "jobname": "germany",
         "run_dir": "./runs"
-
     },
     "environment": {
-        "exp_name": "controlnet_kits_finetune",
+        "exp_name": "germany",
+        "data_dir": "/home/user/Thesis/data/RETOUCH_TRAIN_SPECTRALIS",
         "model_dir": "./models",
         "output_dir": "./outputs",
-        "latent_dir": "./outputs/latents_india",
         "tfevent_path": "./outputs/tfevent",
-        "trained_autoencoder_path": "./models/VAE/november_2.pt",
-        "trained_diffusion_path": "./models/DIFF/heinrich3/runs_6.pt",
-        "trained_controlnet_path": "./models/controlnet_kits_finetune_best.pt",
-        "data_base_dir": ["./datasets/C4KC-KiTS_subset"],
-        "json_data_list": ["./datasets/C4KC-KiTS_subset.json"]
+        "trained_autoencoder_path": "./runs/lima/lima_best.pt",
+        "trained_diffusion_path": "./runs/DIFFUSION_20250927_1536/models/diff_unet_ckpt.pt",
+        "trained_controlnet_path": "./runs/germany_best.pt"
     },
     "training": {
-        "batch_size": 1,
+        "num_classes": 5,
+        "batch_size": 64,
+        "save_every": 25,
+        "generate_every": 25,
         "num_workers": 16,
+        "seed": 69,
         "controlnet_train": {
-            "batch_size": 1,
+            "batch_size": 64,
             "cache_rate": 0.0,
             "fold": 0,
             "lr": 1e-5,
-            "n_epochs": 100,
-            "weighted_loss_label": [129],
-            "weighted_loss": 100
+            "n_epochs": 5000,
+            "weighted_loss_label": [null],
+            "weighted_loss": 1
         },
         "controlnet_infer": {
            "num_inference_steps": 1000,
@@ -40,7 +40,7 @@
         "latent_channels": 4,
         "mask_generation_latent_shape": [4, 64, 64],
         "autoencoder_def": {
-            "_target_": "monai.apps.generation.maisi.networks.autoencoderkl_maisi.AutoencoderKlMaisi",
+            "_target_": "networks.autoencoderkl_maisi.AutoencoderKlMaisi",
             "spatial_dims": "@spatial_dims",
             "in_channels": "@image_channels",
             "out_channels": "@image_channels",
@@ -92,59 +92,10 @@
             ],
             "num_res_blocks": 2,
             "use_flash_attention": true,
-            "conditioning_embedding_in_channels": 4,
-            "conditioning_embedding_num_channels": [8, 32, 64]
+            "conditioning_embedding_in_channels": 5,
+            "conditioning_embedding_num_channels": [32, 64, 128]
         },
-        "mask_generation_autoencoder_def": {
-            "_target_": "monai.apps.generation.maisi.networks.autoencoderkl_maisi.AutoencoderKlMaisi",
-            "spatial_dims": "@spatial_dims",
-            "in_channels": 8,
-            "out_channels": 125,
-            "latent_channels": "@latent_channels",
-            "num_channels": [
-                32, 64, 128
-            ],
-            "num_res_blocks": [1, 2, 2],
-            "norm_num_groups": 32,
-            "norm_eps": 1e-06,
-            "attention_levels": [
-                false,
-                false,
-                false
-            ],
-            "with_encoder_nonlocal_attn": false,
-            "with_decoder_nonlocal_attn": false,
-            "use_flash_attention": false,
-            "use_checkpointing": true,
-            "use_convtranspose": true,
-            "norm_float16": true,
-            "num_splits": 8,
-            "dim_split": 1
-        },
-        "mask_generation_diffusion_def": {
-            "_target_": "monai.networks.nets.diffusion_model_unet.DiffusionModelUNet",
-            "spatial_dims": "@spatial_dims",
-            "in_channels": "@latent_channels",
-            "out_channels": "@latent_channels",
-            "channels":[64, 128, 256, 512],
-            "attention_levels":[false, false, true, true],
-            "num_head_channels":[0, 0, 32, 32],
-            "num_res_blocks": 2,
-            "use_flash_attention": true,
-            "with_conditioning": true,
-            "upcast_attention": true,
-            "cross_attention_dim": 10
-        },
-        "mask_generation_scale_factor": 1.0055984258651733,
         "noise_scheduler": {
-            "_target_": "monai.networks.schedulers.ddpm.DDPMScheduler",
-            "num_train_timesteps": 1000,
-            "beta_start": 0.0015,
-            "beta_end": 0.0195,
-            "schedule": "scaled_linear_beta",
-            "clip_sample": false
-        },
-        "mask_generation_noise_scheduler": {
             "_target_": "monai.networks.schedulers.ddpm.DDPMScheduler",
             "num_train_timesteps": 1000,
             "beta_start": 0.0015,
