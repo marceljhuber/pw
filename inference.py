@@ -27,8 +27,9 @@ torch.cuda.manual_seed(seed)  # CUDA
 torch.cuda.manual_seed_all(seed)  # multiple GPUs
 np.random.seed(seed)
 random.seed(seed)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
+deterministic_inference = os.environ.get("DETERMINISTIC_INFERENCE", "0") == "1"
+torch.backends.cudnn.deterministic = deterministic_inference
+torch.backends.cudnn.benchmark = not deterministic_inference
 
 ###################################################################################################
 # PATHS
@@ -154,7 +155,7 @@ def load_autoencoder(trained_autoencoder_path):
 # INITIALIZATION
 noise_scheduler = define_instance(args, "noise_scheduler")
 
-device = torch.device("cuda")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load model
 autoencoder = load_autoencoder(args.trained_autoencoder_path)
@@ -165,6 +166,7 @@ checkpoint_diffusion_unet = torch.load(args.trained_diffusion_path, weights_only
 diffusion_unet.load_state_dict(
     checkpoint_diffusion_unet["unet_state_dict"], strict=True
 )
+diffusion_unet.eval()
 scale_factor = checkpoint_diffusion_unet["scale_factor"].to(device)
 
 latent_shape = [4, 64, 64]
@@ -218,6 +220,7 @@ ldm_sampler = LDMSampler(
 # INFERENCE
 ###################################################################################################
 print(f"The generated image/mask pairs will be saved in {args.output_dir}.")
-output_filenames = ldm_sampler.sample_multiple_images(args.num_output_samples)
+with torch.inference_mode():
+    output_filenames = ldm_sampler.sample_multiple_images(args.num_output_samples)
 print("MAISI image/mask generation finished")
 ###################################################################################################

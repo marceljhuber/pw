@@ -291,27 +291,8 @@ def generate_images_in_batches(
                 break
 
             # Generate a batch of images
-            with torch.no_grad():
-                # Mixed precision context
+            with torch.inference_mode():
                 # Initialize random noise (always using float32 for consistency)
-                latents = (
-                    initialize_noise_latents(current_batch_size, latent_shape, device)
-                    * 1.0
-                )  # noise_factor = 1.0
-
-                # Run diffusion process
-                for t in timesteps:
-                    t_tensor = torch.tensor([t] * current_batch_size, device=device)
-                    noise_pred = diffusion_unet(latents, t_tensor)
-                    latents, _ = noise_scheduler.step(noise_pred, t, latents)
-
-                    # Explicitly free memory
-                    del noise_pred
-
-                # Decode latents to images
-                synthetic_images = recon_model(latents)
-
-                # Initialize random noise
                 latents = (
                     initialize_noise_latents(current_batch_size, latent_shape, device)
                     * 1.0
@@ -334,7 +315,6 @@ def generate_images_in_batches(
 
                 # Free memory
                 del latents, synthetic_images
-                torch.cuda.empty_cache()
 
             # Save images in parallel
             image_idx_start = batch_idx * batch_size

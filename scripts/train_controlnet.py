@@ -156,12 +156,8 @@ def generate_image_grid(
                     # Update latent
                     latents, _ = noise_scheduler.step(noise_pred, t, latents)
 
-                    # Clear CUDA cache every few steps to prevent memory buildup
-                    if i % 10 == 0:
-                        torch.cuda.empty_cache()
 
                 del noise_pred
-                torch.cuda.empty_cache()
 
                 # Decode latents to images
                 synthetic_images = recon_model(latents)
@@ -176,7 +172,6 @@ def generate_image_grid(
                 synthetic_images = (synthetic_images - b_min) / (b_max - b_min)
 
                 class_images.append(synthetic_images)
-                torch.cuda.empty_cache()
 
             # Collect all images for this class
             all_images.extend(class_images)
@@ -187,7 +182,6 @@ def generate_image_grid(
     grid = make_grid(all_images_tensor, nrow=num_seeds, normalize=False)
 
     del all_images, all_images_tensor
-    torch.cuda.empty_cache()
 
     # Convert to numpy for matplotlib
     grid_np = grid.permute(1, 2, 0).numpy()
@@ -619,8 +613,6 @@ def main():
                 num_seeds=args.num_seeds,
                 num_classes=args.num_classes,
             )
-
-        torch.cuda.empty_cache()
 
     # Close wandb run if it was initialized
     if rank == 0 and wandb.run is not None:

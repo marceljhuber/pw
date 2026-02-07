@@ -1,0 +1,60 @@
+name: maisi
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+
+  # PyTorch with CUDA 11.8 (compatible with driver 535)
+  - pytorch::pytorch=2.1.0
+  - pytorch::torchvision=0.16.0
+  - pytorch::pytorch-cuda=11.8
+
+  # Core scientific computing
+  - numpy=1.26
+  - scipy
+  - scikit-learn
+  - scikit-image
+  - pandas
+
+  # Image processing
+  - pillow
+  - opencv
+
+  # Visualization
+  - matplotlib
+  - seaborn
+  - tqdm
+
+  # Jupyter (optional, for notebooks)
+  - jupyterlab
+  - ipykernel
+
+  # Pip dependencies
+  - pip:
+      # Medical imaging
+      - monai==1.3.0
+      - nibabel
+
+      # Diffusion models
+      - diffusers==0.25.0
+      - accelerate
+      - transformers
+
+      # Training utilities
+      - wandb
+      - tensorboard
+
+      # Image augmentation
+      - albumentations
+
+      # Perceptual loss
+      - lpips
+
+      # Utilities
+      - einops
+      - fire
+      - pyyaml
