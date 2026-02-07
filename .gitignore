@@ -1,26 +1,72 @@
-.idea/
-venv/
-.env
+# Python
 __pycache__/
+*.py[cod]
 *.pyc
 *.pyo
 *.pyd
 *.egg-info/
-.build/
-dist/
-.pytest_cache/
-.ipynb_checkpoints/
-.DS_Store
-# ignore heavy dirs
-latents/**
-runs/**
-!runs/.gitkeep # keep the folder itself (optional)
+*.egg
 
-# usual Python junk (optional but handy)
-__pycache__/
-*.py[cod]
-.ipynb_checkpoints/
-*.egg-info/
-dist/
+# Virtual environments
+venv/
+env/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+.build/
 build/
-/wandb/
+dist/
+*.so
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter notebooks (often contain outputs and execution state)
+*.ipynb
+.ipynb_checkpoints/
+
+# Training outputs and experiments
+runs/
+!runs/.gitkeep
+latents/
+!latents/.gitkeep
+
+# Weights & Biases experiment tracking
+wandb/
+
+# Model weights (large binary files)
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Data and results
+*.csv
+results/
+outputs/
+
+# Environment files (auto-generated)
+environment.yml
+environment.yaml
+
+# Papers and large PDFs
+papers/*.pdf
+*.pdf
+
+# Temporary and log files
+*.log
+*.tmp
+*.temp

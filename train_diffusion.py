@@ -112,13 +112,7 @@ def parse_args():
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description="Train diffusion model")
-    parser.add_argument("--config", type=str, default="./configs/config_DIFF.json")
-    parser.add_argument("--name", type=str, default="DIFFUSION")
-    parser.add_argument(
-        "--checkpoint", type=str, default=None, help="Path to checkpoint file"
-    )
-    args = parser.parse_args()
+    args = parse_args()
 
     # Setup
     set_random_seeds()

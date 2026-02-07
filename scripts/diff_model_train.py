@@ -242,7 +242,8 @@ def train_one_epoch(
                 noisy_latent = noise_scheduler.add_noise(latents, noise, timesteps)
 
                 if args.use_cfg:
-                    # CFG training (NOT in your code)
+                    # Classifier-Free Guidance (CFG) training
+                    # Randomly drop conditioning 15% of the time to enable CFG at inference
                     if random.random() < 0.15:  # 15% dropout rate
                         class_labels = None  # Drop conditioning
                     noise_pred = unet(

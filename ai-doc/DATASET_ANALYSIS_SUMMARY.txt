@@ -1,0 +1,204 @@
+================================================================================
+KERMANYV3_RESIZED DATASET ANALYSIS SUMMARY
+Analyzed: February 7, 2026
+Location: /home/user/Thesis/data/KermanyV3_resized
+================================================================================
+
+QUICK FACTS
+-----------
+Total Images:     109,309
+Training Images:  108,309 (99.08%)
+Test Images:      1,000 (0.92%)
+Image Format:     JPEG, 8-bit grayscale
+Image Size:       512 × 512 pixels
+Storage Size:     ~8.6 GB
+Classes:          4 (CNV, DME, DRUSEN, NORMAL)
+
+CLASS DISTRIBUTION (TRAINING SET)
+----------------------------------
+Class 0 - CNV (Choroidal Neovascularization):
+  - Count: 37,205 images (34.35%)
+  - Storage: 3.1 GB
+  - Mean intensity: 34.54 (darker images)
+  - Clinical: Wet AMD, urgent treatment needed
+
+Class 1 - DME (Diabetic Macular Edema):
+  - Count: 11,348 images (10.48%)
+  - Storage: 971 MB
+  - Mean intensity: 65.86
+  - Clinical: Diabetes complication, vision loss risk
+
+Class 2 - DRUSEN:
+  - Count: 8,616 images (7.96%) ⚠️ MINORITY CLASS
+  - Storage: 653 MB
+  - Mean intensity: 47.04
+  - Clinical: Early AMD sign, monitoring required
+
+Class 3 - NORMAL:
+  - Count: 51,140 images (47.22%) ⚠️ MAJORITY CLASS
+  - Storage: 3.8 GB
+  - Mean intensity: 64.48
+  - Clinical: Healthy retina, control group
+
+TEST SET (BALANCED)
+-------------------
+Each class: 250 images (25.00%)
+Total: 1,000 images
+Purpose: Unbiased evaluation
+
+CLASS IMBALANCE
+---------------
+Imbalance ratio (DRUSEN as reference):
+  - NORMAL:  6.0x more
+  - CNV:     4.3x more
+  - DME:     1.3x more
+  - DRUSEN:  1.0x (baseline)
+
+Recommended handling strategies:
+  1. Weighted loss functions
+  2. Oversampling minority classes (DRUSEN, DME)
+  3. Class-specific data augmentation
+  4. Focal loss for severe imbalance
+
+FILE NAMING PATTERN
+-------------------
+Format: {CLASS_NAME}-{PATIENT_ID}-{IMAGE_NUMBER}.jpeg
+Examples:
+  - CNV-2120559-59.jpeg
+  - DME-3608465-12.jpeg
+  - DRUSEN-1912508-22.jpeg
+  - NORMAL-1714859-3.jpeg
+
+Note: Multiple images per patient (sequential B-scans from 3D volumes)
+
+PREPROCESSING RECOMMENDATIONS
+------------------------------
+1. Normalization: Scale to [0, 1] or [-1, 1]
+   - Method 1: image / 255.0
+   - Method 2: (image - mean) / std
+   - Dataset mean: 54.73, std: 47.85
+
+2. Data Augmentation:
+   - Horizontal flip (50% probability)
+   - Random rotation (±10 degrees)
+   - Random crop/zoom (0.8-1.0 scale)
+   - Speckle noise (OCT-specific)
+   - Brightness/contrast adjustment
+
+3. Class Balancing:
+   - Use WeightedRandomSampler
+   - Or oversample DRUSEN (7.96%) and DME (10.48%)
+
+PATIENT-LEVEL CONSIDERATIONS
+-----------------------------
+⚠️ IMPORTANT: Multiple B-scans per patient exist
+  - Extract PATIENT_ID from filename
+  - Use patient-level train/val split to prevent data leakage
+  - Avoid having same patient in both train and validation
+
+Recommended split strategy:
+  1. Extract unique patient IDs
+  2. Split patients (not images) into train/val
+  3. Assign all images from each patient to respective split
+
+MAISI-OCT TRAINING USAGE
+-------------------------
+1. VAE Training (Stage 1):
+   - Use all 108,309 training images
+   - Unsupervised learning (no labels needed)
+   - Learn compressed latent representation
+
+2. Diffusion Model (Stage 2):
+   - Train on latent features from VAE
+   - Optional: Use class labels as conditioning
+   - Generate realistic OCT images
+
+3. ControlNet (Stage 3):
+   - Class-conditional generation
+   - Generate specific pathologies on demand
+   - Fine-tune for each class
+
+QUALITY CONTROL CHECKLIST
+--------------------------
+✓ All images are 512×512 pixels
+✓ All images are grayscale (mode L)
+✓ Value range [0, 255] uint8
+✓ No corrupted files detected (spot check)
+✓ File naming convention consistent
+✓ Train/test split properly separated
+
+POTENTIAL ISSUES TO MONITOR
+----------------------------
+1. Class imbalance (NORMAL >> others)
+   → Solution: Weighted loss or oversampling
+
+2. Patient overlap between splits
+   → Solution: Patient-aware splitting
+
+3. Low representation of DRUSEN class
+   → Solution: Aggressive augmentation + oversampling
+
+4. CNV images are darker (mean: 34.54 vs others ~60)
+   → Solution: Per-class normalization or adaptive preprocessing
+
+VISUALIZATION
+-------------
+Sample images from each class saved to:
+  /media/user/Extreme SSD/Thesis/pw/ai-doc/dataset_samples.png
+
+Shows 2 representative images per class demonstrating:
+  - CNV: Dark, fluid accumulation
+  - DME: Cystic spaces
+  - DRUSEN: RPE elevations
+  - NORMAL: Clear layer structure
+
+COMPUTATIONAL REQUIREMENTS
+---------------------------
+Training with this dataset:
+  - RAM: 16-32 GB recommended
+  - GPU: 16+ GB VRAM (NVIDIA V100, RTX 4090, or better)
+  - Storage: ~10 GB for dataset + outputs
+  - Training time (VAE): ~8-12 hours on V100
+  - Training time (Diffusion): ~24-48 hours on V100
+
+DATA LOADING PERFORMANCE
+-------------------------
+Recommended settings:
+  - num_workers: 8-16 (CPU cores)
+  - batch_size: 8-32 (depending on GPU memory)
+  - cache_rate: 0.5 (cache 50% in RAM if available)
+  - pin_memory: True (for GPU transfer speed)
+
+CITATION
+--------
+If using this dataset, cite:
+Kermany et al. (2018), "Identifying Medical Diagnoses and Treatable
+Diseases by Image-Based Deep Learning", Cell, 172(5):1122-1131
+
+NEXT STEPS FOR MAISI-OCT TRAINING
+----------------------------------
+1. ✓ Dataset analyzed and documented
+2. → Update config files with correct paths:
+     - config_VAE.json: image_dir path
+     - config_DIFF.json: image_dir or latents_path
+     - config_CONTROLNET_*.json: conditioning paths
+
+3. → Start VAE training:
+     python train_vae.py --config ./configs/config_VAE.json
+
+4. → Monitor training with W&B or TensorBoard
+
+5. → Encode to latents (optional but recommended):
+     python scripts/encode_to_latents.py
+
+6. → Train diffusion model
+
+7. → Train ControlNet for class-conditional generation
+
+For detailed instructions, see:
+  - ai-doc/04_TRAINING_GUIDE.md
+  - ai-doc/06_DATASET_KERMANYV3.md
+
+================================================================================
+END OF ANALYSIS
+================================================================================

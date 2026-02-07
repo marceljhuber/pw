@@ -264,7 +264,7 @@ def save_reconstruction_plot(original, reconstruction, epoch, save_dir):
 def main():
     # Parse arguments and load config
     parser = argparse.ArgumentParser(description="Train VAE-GAN model")
-    parser.add_argument("--config", type=str, default="./configs/config.json")
+    parser.add_argument("--config", type=str, default="./configs/config_VAE.json")
     parser.add_argument("--checkpoint", type=str, default=None)
     args = parser.parse_args()
 

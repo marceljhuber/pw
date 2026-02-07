@@ -228,44 +228,6 @@ def list_latent_files(directory_path):
     return glob.glob(os.path.join(directory_path, "**", "*_latent.pt"), recursive=True)
 
 
-def split_data_by_patient(file_paths, train_ratio=0.8):
-    """Split dataset by patient ID to avoid patient leakage between train and validation."""
-    # Extract unique patient IDs
-    patient_ids = set()
-    for file_path in file_paths:
-        filename = Path(file_path).stem
-        try:
-            patient_id = filename.split("-")[1]
-            patient_ids.add(patient_id)
-        except IndexError:
-            continue
-
-    patient_ids = list(patient_ids)
-    random.shuffle(patient_ids)
-
-    # Split patient IDs
-    split_idx = int(len(patient_ids) * train_ratio)
-    train_patients = set(patient_ids[:split_idx])
-    val_patients = set(patient_ids[split_idx:])
-
-    # Assign files based on patient ID
-    train_files = []
-    val_files = []
-
-    for file_path in file_paths:
-        filename = Path(file_path).stem
-        try:
-            patient_id = filename.split("-")[1]
-            if patient_id in train_patients:
-                train_files.append(file_path)
-            elif patient_id in val_patients:
-                val_files.append(file_path)
-        except IndexError:
-            continue  # Skip files that don't follow the naming convention
-
-    return train_files, val_files
-
-
 def split_data_by_patient(file_paths, cluster_labels=None, train_ratio=0.9):
     """
     Split data by patient ID to prevent patient data leakage between train and validation.
