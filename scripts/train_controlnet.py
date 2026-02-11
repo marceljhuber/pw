@@ -20,6 +20,11 @@ from datetime import timedelta
 from datetime import datetime
 from pathlib import Path
 
+# Use a non-interactive backend to avoid Tk/Tcl crashes
+# when running in background/no-display environments.
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -28,8 +33,8 @@ import torch.nn.functional as F
 from monai.networks.utils import copy_model_state
 from monai.utils import RankFilter
 
-# from torch.cuda.amp import GradScaler, autocast
-from torch.amp import GradScaler, autocast
+# from torch.cuda.amp import GradScaler
+from torch.cuda.amp import GradScaler
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import make_grid
@@ -58,6 +63,7 @@ def generate_image_grid(
     scale_factor=1.0,
     num_seeds=10,
     num_classes=16,
+    latent_shape=None,
 ):
     """
     Generate a grid of images for visualization after each epoch.
@@ -94,6 +100,12 @@ def generate_image_grid(
     # Create a directory for visualizations if it doesn't exist
     os.makedirs(save_dir, exist_ok=True)
 
+    if latent_shape is None:
+        latent_shape = (4, 64, 64)
+    latent_shape = tuple(int(x) for x in latent_shape)
+    cond_h = latent_shape[1] * 4
+    cond_w = latent_shape[2] * 4
+
     # Set up inference timesteps
     noise_scheduler.set_timesteps(1000, device=device)
 
@@ -105,15 +117,15 @@ def generate_image_grid(
     all_images = []
 
     # Create conditions for each class (one-hot encoded)
-    # with torch.no_grad(), torch.cuda.amp.autocast():
-    with torch.no_grad(), torch.amp.autocast("cuda"):
+    use_amp = device.type == "cuda"
+    with torch.no_grad(), torch.autocast("cuda", enabled=use_amp):
         for class_idx in range(num_classes):
             logger.info(f"Generating images of class {class_idx}.")
             class_images = []
 
             # Create condition for this class
             condition = torch.zeros(
-                (1, num_classes, 256, 256), dtype=torch.float32, device=device
+                (1, num_classes, cond_h, cond_w), dtype=torch.float32, device=device
             )
             condition[0, class_idx] = 1.0  # Set the corresponding class channel to 1
 
@@ -124,7 +136,7 @@ def generate_image_grid(
                 np.random.seed(fixed_seeds[seed_idx])
 
                 # Generate random noise
-                latents = initialize_noise_latents((4, 64, 64), device) * noise_factor
+                latents = initialize_noise_latents(latent_shape, device) * noise_factor
 
                 # Explicitly convert to float32 before any processing
                 latents = latents.float()
@@ -228,7 +240,7 @@ def main():
     # Step 0: configuration
     logger = logging.getLogger("maisi.controlnet.training")
     # whether to use distributed data parallel
-    use_ddp = args.gpus > 1
+    use_ddp = args.gpus > 1 and torch.cuda.is_available()
     if use_ddp:
         rank = int(os.environ["LOCAL_RANK"])
         world_size = int(os.environ["WORLD_SIZE"])
@@ -237,10 +249,13 @@ def main():
     else:
         rank = 0
         world_size = 1
-        device = torch.device(f"cuda:{rank}")
+        device = torch.device(f"cuda:{rank}" if torch.cuda.is_available() else "cpu")
 
-    torch.cuda.set_device(device)
-    logger.info(f"Number of GPUs: {torch.cuda.device_count()}")
+    if device.type == "cuda":
+        torch.cuda.set_device(device)
+        logger.info(f"Number of GPUs: {torch.cuda.device_count()}")
+    else:
+        logger.info("CUDA not available; running ControlNet training on CPU")
     logger.info(f"World_size: {world_size}")
 
     # Initialize wandb only for rank 0 process when using DDP
@@ -269,10 +284,23 @@ def main():
     for k, v in training_dict.items():
         setattr(args, k, v)
 
+    # Ensure output directories exist (this script can be run directly via `python -m`).
+    os.makedirs(args.model_dir, exist_ok=True)
+    os.makedirs(args.output_dir, exist_ok=True)
+    os.makedirs(args.tfevent_path, exist_ok=True)
+
+    vis_dir = os.path.join(args.output_dir, "visualizations")
+    os.makedirs(vis_dir, exist_ok=True)
+
     # Step 1: Define Data Loader
     # train_loader, val_loader = create_latent_dataloaders(args.latent_dir)
     train_loader, val_loader = create_cluster_dataloaders(
-        data_dir=args.latent_dir, batch_size=40, num_workers=8, train_ratio=0.9
+        data_dir=args.latent_dir,
+        batch_size=int(args.controlnet_train.get("batch_size", 40))
+        if isinstance(args.controlnet_train, dict)
+        else 40,
+        num_workers=int(getattr(args, "num_workers", 0)),
+        train_ratio=0.9,
     )
     # train_loader = torch.utils.data.DataLoader(
     #     list(train_loader.dataset)[: 100 * train_loader.batch_size],
@@ -347,14 +375,14 @@ def main():
     controlnet = define_instance(args, "controlnet_def").to(device)
     copy_model_state(controlnet, unet.state_dict())
 
+    start_epoch = 0
     if args.trained_controlnet_path is not None:
         if not os.path.exists(args.trained_controlnet_path):
             raise ValueError("Please download the trained ControlNet checkpoint.")
-        controlnet.load_state_dict(
-            torch.load(args.trained_controlnet_path, map_location=device)[
-                "controlnet_state_dict"
-            ]
-        )
+        controlnet_ckpt = torch.load(args.trained_controlnet_path, map_location=device)
+        controlnet.load_state_dict(controlnet_ckpt["controlnet_state_dict"])
+        # Best-effort resume: continue epoch count if present.
+        start_epoch = int(controlnet_ckpt.get("epoch", 0))
         logger.info(
             f"load trained controlnet model from {args.trained_controlnet_path}"
         )
@@ -367,6 +395,8 @@ def main():
     ####################################################################################################################
 
     noise_scheduler = define_instance(args, "noise_scheduler")
+
+    use_amp = device.type == "cuda"
 
     if use_ddp:
         controlnet = DDP(
@@ -394,9 +424,14 @@ def main():
     # Step 4: Training
     n_epochs = args.controlnet_train["n_epochs"]
     # scaler = GradScaler()
-    scaler = GradScaler("cuda")
+    scaler = GradScaler(enabled=use_amp)
     total_step = 0
     best_loss = 1e4
+    if args.trained_controlnet_path is not None:
+        try:
+            best_loss = float(controlnet_ckpt.get("loss", best_loss))
+        except Exception:
+            pass
 
     if weighted_loss > 1.0:
         logger.info(
@@ -406,7 +441,16 @@ def main():
     controlnet.train()
     unet.eval()
     prev_time = time.time()
-    for epoch in range(n_epochs):
+    # Best-effort: advance scheduler to roughly match resumed epoch.
+    if start_epoch > 0:
+        try:
+            for _ in range(start_epoch * len(train_loader)):
+                lr_scheduler.step()
+            logger.info(f"Resuming from epoch {start_epoch + 1}/{n_epochs}.")
+        except Exception:
+            logger.info(f"Resuming from epoch {start_epoch + 1}/{n_epochs} (no scheduler pre-step).")
+
+    for epoch in range(start_epoch, n_epochs):
         epoch_loss_ = 0
         batch_times = []
         losses = []
@@ -419,20 +463,19 @@ def main():
             inputs = batch[0].squeeze(1).to(device) * scale_factor  # Cluster
             labels = batch[1].to(device)  # Cluster
 
-            labels = torch.nn.functional.one_hot(
-                labels, num_classes=16
-            ).float()  # Now shape [40, num_classes]
-            labels = labels.unsqueeze(-1).unsqueeze(
-                -1
-            )  # Now shape [40, num_classes, 1, 1]
+            # Condition image size derived from latent size (VAE downsampling factor = 4)
+            cond_h = int(inputs.shape[-2] * 4)
+            cond_w = int(inputs.shape[-1] * 4)
+
+            labels = torch.nn.functional.one_hot(labels, num_classes=args.num_classes).float()
+            labels = labels.unsqueeze(-1).unsqueeze(-1)
             labels = F.interpolate(
-                labels, size=(256, 256), mode="bilinear", align_corners=False
-            )  # Now shape [40, num_classes, 256, 256]
+                labels, size=(cond_h, cond_w), mode="bilinear", align_corners=False
+            )
 
             optimizer.zero_grad(set_to_none=True)
 
-            # with autocast(enabled=True):
-            with autocast("cuda", enabled=True):
+            with torch.autocast("cuda", enabled=use_amp):
                 noise_shape = list(inputs.shape)
                 noise = torch.randn(noise_shape, dtype=inputs.dtype).to(device)
 
@@ -569,19 +612,21 @@ def main():
                 if world_size > 1
                 else controlnet.state_dict()
             )
-            print(f"{args.model_dir}/{args.exp_name}_{epoch}.pt")  # TODO
-            torch.save(
-                {
-                    "epoch": epoch + 1,
-                    "loss": epoch_loss,
-                    "controlnet_state_dict": controlnet_state_dict,
-                },
-                f"{args.model_dir}/{args.exp_name}_{epoch}.pt",
-            )
+            save_every = int(getattr(args, "save_every", 1) or 1)
+            if ((epoch + 1) % save_every) == 0 or (epoch + 1) == n_epochs:
+                print(f"{args.model_dir}/{args.exp_name}_{epoch}.pt")  # TODO
+                torch.save(
+                    {
+                        "epoch": epoch + 1,
+                        "loss": epoch_loss,
+                        "controlnet_state_dict": controlnet_state_dict,
+                    },
+                    f"{args.model_dir}/{args.exp_name}_{epoch}.pt",
+                )
 
-            # Log model checkpoint to wandb
-            if wandb.run is not None:
-                wandb.save(f"{args.model_dir}/{args.exp_name}_{epoch}.pt")
+                # Log model checkpoint to wandb
+                if wandb.run is not None:
+                    wandb.save(f"{args.model_dir}/{args.exp_name}_{epoch}.pt")
 
             if epoch_loss < best_loss:
                 best_loss = epoch_loss
@@ -600,19 +645,24 @@ def main():
                 if wandb.run is not None:
                     wandb.save(f"{args.model_dir}/{args.exp_name}_best.pt")
 
-            generate_image_grid(
-                autoencoder=autoencoder,
-                unet=unet,
-                controlnet=controlnet.module if world_size > 1 else controlnet,
-                noise_scheduler=noise_scheduler,
-                device=device,
-                epoch=epoch,
-                save_dir=vis_dir,
-                logger=logger,
-                scale_factor=scale_factor,
-                num_seeds=args.num_seeds,
-                num_classes=args.num_classes,
-            )
+            vis_every = int(getattr(args, "vis_every", 1) or 1)
+            if ((epoch + 1) % vis_every) == 0 or (epoch + 1) == n_epochs:
+                generate_image_grid(
+                    autoencoder=autoencoder,
+                    unet=unet,
+                    controlnet=controlnet.module if world_size > 1 else controlnet,
+                    noise_scheduler=noise_scheduler,
+                    device=device,
+                    epoch=epoch,
+                    save_dir=vis_dir,
+                    logger=logger,
+                    scale_factor=scale_factor,
+                    num_seeds=args.num_seeds,
+                    num_classes=args.num_classes,
+                    latent_shape=getattr(
+                        args, "mask_generation_latent_shape", (4, 64, 64)
+                    ),
+                )
 
     # Close wandb run if it was initialized
     if rank == 0 and wandb.run is not None:

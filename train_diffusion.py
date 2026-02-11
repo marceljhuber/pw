@@ -6,6 +6,7 @@ import random
 import warnings
 from datetime import datetime
 from pathlib import Path
+import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -63,10 +64,10 @@ def log_metrics(losses, epoch, phase="train"):
     return {f"{phase}/{k}": v for k, v in losses.items()}
 
 
-def setup_training_dirs(name, checkpoint_path=None):
+def setup_training_dirs(name, checkpoint_path=None, run_root="./runs/DIFFUSION"):
     """Sets up training directories and handles checkpoint loading."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-    run_dir = f"./runs/DIFFUSION/{name}_{timestamp}"
+    run_dir = f"{run_root}/{name}_{timestamp}"
     Path(run_dir).mkdir(parents=True, exist_ok=True)
     log_dir = Path(run_dir) / "logs"
     log_dir.mkdir(exist_ok=True)
@@ -107,6 +108,12 @@ def parse_args():
         default="DIFFUSION",
         help="Name for this training run",
     )
+    parser.add_argument(
+        "--run_dir",
+        type=str,
+        default="./runs/DIFFUSION",
+        help="Root directory for diffusion runs",
+    )
     return parser.parse_args()
 
 
@@ -117,7 +124,7 @@ def main():
     # Setup
     set_random_seeds()
     start_epoch, run_dir, model_save_path = setup_training_dirs(
-        args.name, args.checkpoint
+        args.name, args.checkpoint, args.run_dir
     )
 
     # Load config
@@ -168,7 +175,7 @@ def main():
     diff_model_train(
         config,
         run_dir,
-        amp=True,
+        amp=torch.cuda.is_available(),
         start_epoch=start_epoch,
         wandb_run=wandb.run,
         config_path=args.config,
@@ -176,6 +183,24 @@ def main():
 
     # Finish wandb run
     wandb.finish()
+
+    # Write a stable pointer to the latest checkpoint for downstream stages.
+    try:
+        latest_ckpt = Path(run_dir) / "models" / config.get("env_config", {}).get(
+            "model_filename", "diff_unet_ckpt.pt"
+        )
+        stable = Path(args.run_dir) / f"{args.name}_best.pt"
+        if latest_ckpt.exists():
+            if stable.exists() or stable.is_symlink():
+                stable.unlink()
+            try:
+                stable.symlink_to(latest_ckpt)
+                print(f"Wrote symlink: {stable} -> {latest_ckpt}")
+            except Exception:
+                shutil.copy2(latest_ckpt, stable)
+                print(f"Copied checkpoint to: {stable}")
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

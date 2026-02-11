@@ -52,14 +52,38 @@ def list_image_files(directory_path):
     return [file for file in files if file.lower().endswith(image_extensions)]
 
 
+def _extract_patient_id(path_str: str) -> str:
+    """Best-effort patient ID extraction.
+
+    Expected naming convention used in this repo: <CLASS>-<PATIENT>-<IDX>.<ext>
+    Fallbacks to parent directory name, then full stem.
+    """
+    try:
+        name = Path(path_str).name
+        parts = name.split("-")
+        if len(parts) >= 3 and parts[1]:
+            return parts[1]
+    except Exception:
+        pass
+
+    try:
+        p = Path(path_str)
+        parent = p.parent.name
+        if parent:
+            return parent
+        return p.stem
+    except Exception:
+        return str(path_str)
+
+
 def split_train_val_by_patient(image_names, train_ratio=0.9):
     """Split dataset into training and validation sets by patient ID."""
-    patient_ids = set(name.split("-")[1] for name in image_names)
+    patient_ids = sorted({_extract_patient_id(name) for name in image_names})
     num_train = int(len(patient_ids) * train_ratio)
     train_patients = set(random.sample(list(patient_ids), num_train))
 
-    train_images = [img for img in image_names if img.split("-")[1] in train_patients]
-    val_images = [img for img in image_names if img.split("-")[1] not in train_patients]
+    train_images = [img for img in image_names if _extract_patient_id(img) in train_patients]
+    val_images = [img for img in image_names if _extract_patient_id(img) not in train_patients]
 
     return train_images, val_images
 
@@ -635,24 +659,73 @@ def create_oct_dataloaders(
 ########################################################################################################################
 
 
-def setup_transforms():
-    train_transform = transforms.Compose(
+def setup_transforms(config=None):
+    """Create torchvision transforms.
+
+    If config is provided, respects `config["data"]["train_transform"]` and
+    `config["data"]["val_transform"]`.
+    """
+    # Defaults (backwards compatible)
+    resize_hw = (256, 256)
+    flip_p = 0.5
+    rotation_deg = 10
+    brightness = 0.2
+    contrast = 0.2
+    speckle_std = 0.1
+    crop_scale = (0.8, 1.0)
+
+    if isinstance(config, dict):
+        data_cfg = config.get("data", {})
+        train_cfg = data_cfg.get("train_transform", {}) or {}
+        val_cfg = data_cfg.get("val_transform", {}) or {}
+
+        if "resize" in train_cfg:
+            r = train_cfg.get("resize")
+            if isinstance(r, (list, tuple)) and len(r) == 2:
+                resize_hw = (int(r[0]), int(r[1]))
+        elif "resize" in val_cfg:
+            r = val_cfg.get("resize")
+            if isinstance(r, (list, tuple)) and len(r) == 2:
+                resize_hw = (int(r[0]), int(r[1]))
+
+        flip_p = float(train_cfg.get("random_flip_prob", flip_p))
+        rotation_deg = float(train_cfg.get("random_rotation_angle", rotation_deg))
+        brightness = float(train_cfg.get("brightness_adjustment", brightness))
+        contrast = float(train_cfg.get("contrast_adjustment", contrast))
+        speckle_std = float(train_cfg.get("speckle_noise_std", speckle_std))
+        if "random_crop_scale" in train_cfg:
+            cs = train_cfg.get("random_crop_scale")
+            if isinstance(cs, (list, tuple)) and len(cs) == 2:
+                crop_scale = (float(cs[0]), float(cs[1]))
+
+    # Train transform: crop (optional) + augment + normalize to [-1, 1]
+    train_ops = []
+    if crop_scale is not None:
+        train_ops.append(transforms.RandomResizedCrop(resize_hw, scale=crop_scale))
+    else:
+        train_ops.append(transforms.Resize(resize_hw))
+    if flip_p > 0:
+        train_ops.append(transforms.RandomHorizontalFlip(p=flip_p))
+    if rotation_deg and rotation_deg > 0:
+        train_ops.append(transforms.RandomRotation(rotation_deg))
+    if brightness != 0 or contrast != 0:
+        train_ops.append(
+            transforms.ColorJitter(brightness=brightness, contrast=contrast)
+        )
+    train_ops.extend(
         [
-            transforms.RandomResizedCrop(256, scale=(0.8, 1.0)),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomRotation(10),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2),
             transforms.ToTensor(),
-            SpeckleNoise(0.1),
-            transforms.Lambda(lambda x: 2 * x - 1),  # Scale to [-1, 1]
+            SpeckleNoise(speckle_std),
+            transforms.Lambda(lambda x: 2 * x - 1),
         ]
     )
+    train_transform = transforms.Compose(train_ops)
 
     val_transform = transforms.Compose(
         [
-            transforms.Resize((256, 256)),
+            transforms.Resize(resize_hw),
             transforms.ToTensor(),
-            transforms.Lambda(lambda x: 2 * x - 1),  # Scale to [-1, 1]
+            transforms.Lambda(lambda x: 2 * x - 1),
         ]
     )
 

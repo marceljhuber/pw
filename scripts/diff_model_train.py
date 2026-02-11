@@ -22,7 +22,7 @@ import torch
 from monai.data import DataLoader
 from monai.transforms import Compose
 from monai.utils import first
-from torch.amp import GradScaler, autocast
+from torch.cuda.amp import GradScaler
 
 # from torch.cuda.amp import GradScaler, autocast
 from tqdm import tqdm
@@ -223,6 +223,8 @@ def train_one_epoch(
     loss_torch = torch.zeros(2, dtype=torch.float, device=device)
     unet.train()
 
+    autocast_enabled = bool(amp and device.type == "cuda")
+
     with tqdm(train_loader, desc=f"Epoch {epoch + 1}") as pbar:
         for train_data in pbar:
             optimizer.zero_grad(set_to_none=True)
@@ -234,7 +236,7 @@ def train_one_epoch(
             else:
                 class_labels = None
 
-            with autocast("cuda", enabled=amp):
+            with torch.autocast("cuda", enabled=autocast_enabled):
                 noise = torch.randn_like(latents, device=device)
                 timesteps = torch.randint(
                     0, num_train_timesteps, (latents.shape[0],), device=device
@@ -258,7 +260,7 @@ def train_one_epoch(
 
                 loss = loss_pt(noise_pred.float(), noise.float())
 
-            if amp:
+            if autocast_enabled:
                 scaler.scale(loss).backward()
                 scaler.step(optimizer)
                 scaler.update()
@@ -302,11 +304,14 @@ def save_checkpoint(
     if save_latest:
         torch.save(checkpoint, f"{run_dir}/models/{args.model_filename}")
 
+    save_every = int(getattr(args, "save_every", 1) or 1)
     save_path = Path(run_dir) / "models"
     save_path.mkdir(exist_ok=True)
-    torch.save(
-        checkpoint, save_path / f"{run_dir.split('/')[-1].split('_')[0]}_{epoch}.pt"
-    )
+    if ((epoch + 1) % save_every) == 0:
+        torch.save(
+            checkpoint,
+            save_path / f"{run_dir.split('/')[-1].split('_')[0]}_{epoch}.pt",
+        )
 
 
 ########################################################################################################################
@@ -426,14 +431,32 @@ def save_validation_images_after_epoch(
         config: Configuration dictionary
         wandb_run: Optional wandb run object for logging
     """
+    # Validation image generation is expensive and can be shape-sensitive.
+    # Default to disabled unless explicitly enabled in config.
+    if not bool(config.get("enable_validation_images", False)):
+        return None
+
+    # For minimal CPU smoke runs, skip it.
+    if models_dict.get("device", None) is None or models_dict["device"].type != "cuda":
+        return None
+
     val_dir = os.path.join(run_dir, "validation_images", f"epoch_{epoch}")
     os.makedirs(val_dir, exist_ok=True)
 
-    latent_shape = [
-        4,
-        64,
-        64,
-    ]
+    # Infer latent shape from a sample if possible.
+    latent_shape = None
+    try:
+        latents_dir = config.get("latents_path")
+        if latents_dir:
+            sample = next(Path(latents_dir).glob("*_latent.pt"))
+            x = torch.load(sample, map_location="cpu")
+            # expected shape: (1, C, H, W)
+            latent_shape = list(x.shape[1:])
+    except Exception:
+        latent_shape = None
+
+    if latent_shape is None:
+        latent_shape = [4, 64, 64]
 
     # Generate validation images
     generated_images = generate_validation_images(
@@ -489,7 +512,7 @@ def diff_model_train(
     ) / args.diffusion_unet_train["batch_size"]
     lr_scheduler = create_lr_scheduler(optimizer, total_steps)
     loss_pt = torch.nn.L1Loss()
-    scaler = GradScaler("cuda")
+    scaler = GradScaler(enabled=(amp and device.type == "cuda"))
 
     if wandb_run:
         wandb_run.config.update(
@@ -506,27 +529,29 @@ def diff_model_train(
     with open(config_path) as f:
         config = json.load(f)
 
-    model_config = config["model"]["autoencoder"]
-
-    # Load model
-    autoencoder = AutoencoderKlMaisi(**model_config).to(device)
-    checkpoint = torch.load(
-        config["main"]["trained_autoencoder_path"],
-        map_location=device,
-        weights_only=True,
-    )
-    autoencoder.load_state_dict(checkpoint["autoencoder_state_dict"])
-    autoencoder.eval()
+    # Only load the autoencoder if we plan to generate validation images.
+    autoencoder = None
+    if bool(config.get("enable_validation_images", False)):
+        model_config = config["model"]["autoencoder"]
+        autoencoder = AutoencoderKlMaisi(**model_config).to(device)
+        checkpoint = torch.load(
+            config["main"]["trained_autoencoder_path"],
+            map_location=device,
+            weights_only=True,
+        )
+        autoencoder.load_state_dict(checkpoint["autoencoder_state_dict"])
+        autoencoder.eval()
     ####################################################################################################################
 
     # Create a models dictionary
     models_dict = {
-        "autoencoder": autoencoder,
         "diffusion_unet": unet,
         "noise_scheduler": noise_scheduler,
         "scale_factor": scale_factor,
         "device": device,
     }
+    if autoencoder is not None:
+        models_dict["autoencoder"] = autoencoder
 
     for epoch in range(start_epoch, args.diffusion_unet_train["n_epochs"]):
         loss_torch = train_one_epoch(
@@ -572,7 +597,8 @@ def diff_model_train(
             wandb_run=wandb_run,
         )
 
-        print(f"Validation images for epoch {epoch} saved to: {val_dir}")
+        if val_dir is not None:
+            print(f"Validation images for epoch {epoch} saved to: {val_dir}")
 
 
 if __name__ == "__main__":

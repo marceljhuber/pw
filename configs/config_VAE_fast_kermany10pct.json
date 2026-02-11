@@ -1,0 +1,64 @@
+{
+  "main": {
+    "run_dir": "./runs",
+    "jobname": "vae_fast64_kermany10pct"
+  },
+  "training": {
+    "seed": 42,
+    "batch_size": 16,
+    "learning_rate": 0.0001,
+    "epochs": 1,
+    "num_workers": 4,
+    "kl_weight": 1e-6,
+    "perceptual_weight": 0.1,
+    "adv_weight": 0.05,
+    "log_interval": 1,
+    "save_interval": 999,
+    "val_interval": 1,
+    "recon_loss": "l1",
+    "amp": false,
+    "cache": 0.0,
+    "save_best_only": true,
+    "max_steps_per_epoch": 20,
+    "max_val_steps": 5
+  },
+  "model": {
+    "autoencoder": {
+      "spatial_dims": 2,
+      "in_channels": 1,
+      "out_channels": 1,
+      "latent_channels": 4,
+      "num_channels": [32, 64, 128],
+      "num_res_blocks": [1, 1, 1],
+      "norm_num_groups": 16,
+      "norm_eps": 1e-6,
+      "attention_levels": [false, false, false],
+      "with_encoder_nonlocal_attn": false,
+      "with_decoder_nonlocal_attn": false,
+      "use_checkpointing": false,
+      "use_convtranspose": false,
+      "norm_float16": false,
+      "num_splits": 1,
+      "dim_split": 1
+    },
+    "discriminator": {
+      "spatial_dims": 2,
+      "num_layers_d": 2,
+      "channels": 16,
+      "in_channels": 1,
+      "out_channels": 1,
+      "norm": "INSTANCE"
+    }
+  },
+  "data": {
+    "image_dir": "/media/user/Extreme SSD/Thesis/data/KermanyV3_resized/train",
+    "subset_patient_fraction": 0.1,
+    "train_transform": {
+      "resize": [64, 64],
+      "random_flip_prob": 0.5
+    },
+    "val_transform": {
+      "resize": [64, 64]
+    }
+  }
+}

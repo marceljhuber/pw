@@ -1,5 +1,7 @@
 import argparse
 import json
+import random
+import shutil
 import warnings
 from datetime import datetime
 from pathlib import Path
@@ -183,6 +185,10 @@ def validate(autoencoder, discriminator, val_loader, losses, config, device):
     }
     recon_loss, adv_loss, perceptual_loss = losses
 
+    max_val_steps = config.get("training", {}).get("max_val_steps", None)
+    max_val_steps = None if max_val_steps in (None, "None") else int(max_val_steps)
+
+    step_count = 0
     with torch.no_grad():
         for batch in val_loader:
             images = batch["image"].to(device).float()
@@ -225,9 +231,13 @@ def validate(autoencoder, discriminator, val_loader, losses, config, device):
                 )
                 val_losses["disc_loss"] += (loss_d_fake + loss_d_real).item() * 0.5
 
+            step_count += 1
+            if max_val_steps is not None and step_count >= max_val_steps:
+                break
+
     # Average the losses
     for k in val_losses:
-        val_losses[k] /= len(val_loader)
+        val_losses[k] /= max(1, step_count)
 
     return val_losses
 
@@ -284,17 +294,66 @@ def main():
 
     # Setup directories
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-    run_dir = Path(f"./runs/VAE/{config['main']['jobname']}_{timestamp}")
+    runs_root = Path(config.get("main", {}).get("run_dir", "./runs"))
+    run_dir = runs_root / "VAE" / f"{config['main']['jobname']}_{timestamp}"
     run_dir.mkdir(parents=True, exist_ok=True)
     recon_dir = run_dir / "reconstructions"
     recon_dir.mkdir(exist_ok=True)
 
     # Setup data
     image_files = list_image_files(config["data"]["image_dir"])
+
+    # Optional: force a fixed patient subset via a patient list file.
+    # File format: one patient id per line (e.g., "1016042").
+    patient_list_path = config.get("data", {}).get("patient_list_path", None)
+    if patient_list_path not in (None, "None", ""):
+        patient_list_path = Path(patient_list_path)
+        if not patient_list_path.exists():
+            raise FileNotFoundError(f"patient_list_path not found: {patient_list_path}")
+        keep_pids = {
+            line.strip()
+            for line in patient_list_path.read_text().splitlines()
+            if line.strip() and not line.strip().startswith("#")
+        }
+        if not keep_pids:
+            raise ValueError(f"patient_list_path is empty: {patient_list_path}")
+
+        filtered = []
+        for p in image_files:
+            name = Path(p).name
+            parts = name.split("-")
+            pid = parts[1] if len(parts) >= 3 else Path(p).stem
+            if pid in keep_pids:
+                filtered.append(p)
+        image_files = filtered
+        print(f"Filtered by patient_list_path: {len(keep_pids)} patients -> {len(image_files)} images")
+
+    # Optional: subset by patient for faster smoke runs
+    subset_patient_fraction = config.get("data", {}).get("subset_patient_fraction", 1.0)
+    subset_patient_fraction = float(subset_patient_fraction)
+    if 0 < subset_patient_fraction < 1.0:
+        # Group by patient id based on the expected "<CLASS>-<PATIENT>-<IDX>" naming.
+        patient_to_files = {}
+        for p in image_files:
+            name = Path(p).name
+            parts = name.split("-")
+            pid = parts[1] if len(parts) >= 3 else Path(p).stem
+            patient_to_files.setdefault(pid, []).append(p)
+
+        all_pids = sorted(patient_to_files.keys())
+        rng = random.Random(config.get("training", {}).get("seed", 42))
+        rng.shuffle(all_pids)
+        k = max(1, int(round(len(all_pids) * subset_patient_fraction)))
+        keep_pids = set(all_pids[:k])
+        image_files = [p for pid in keep_pids for p in patient_to_files[pid]]
+        print(
+            f"Subsetting to {len(keep_pids)}/{len(all_pids)} patients ({subset_patient_fraction:.0%}); "
+            f"{len(image_files)} images"
+        )
+
     train_images, val_images = split_train_val_by_patient(image_files)
     print(f"Found {len(train_images)} train images.")
-    train_transform, val_transform = setup_transforms()
-    train_transform = val_transform  # No train transform #TODO
+    train_transform, val_transform = setup_transforms(config)
     train_loader, val_loader = setup_dataloaders(
         train_images, val_images, train_transform, val_transform, config
     )
@@ -306,6 +365,31 @@ def main():
     )
     losses = setup_losses(config, device)
 
+    # Optional: resume training from checkpoint
+    best_val_loss = float("inf")
+    start_epoch = 0
+    if args.checkpoint is not None and args.checkpoint != "None":
+        ckpt_path = Path(args.checkpoint)
+        if not ckpt_path.exists():
+            raise FileNotFoundError(f"Checkpoint not found: {ckpt_path}")
+        checkpoint = torch.load(str(ckpt_path), map_location=device)
+        autoencoder.load_state_dict(checkpoint["autoencoder_state_dict"], strict=True)
+        discriminator.load_state_dict(checkpoint["discriminator_state_dict"], strict=True)
+        if "optimizer_g_state_dict" in checkpoint:
+            optimizer_g.load_state_dict(checkpoint["optimizer_g_state_dict"])
+        if "optimizer_d_state_dict" in checkpoint:
+            optimizer_d.load_state_dict(checkpoint["optimizer_d_state_dict"])
+        if "scheduler_g_state_dict" in checkpoint:
+            scheduler_g.load_state_dict(checkpoint["scheduler_g_state_dict"])
+        if "scheduler_d_state_dict" in checkpoint:
+            scheduler_d.load_state_dict(checkpoint["scheduler_d_state_dict"])
+
+        start_epoch = int(checkpoint.get("epoch", -1)) + 1
+        best_val_loss = float(checkpoint.get("best_val_loss", best_val_loss))
+        print(
+            f"Resuming from {ckpt_path} at epoch {start_epoch} (best_val_loss={best_val_loss})."
+        )
+
     # Setup AMP if enabled
     if config["training"]["amp"]:
         scaler_g = GradScaler(init_scale=2.0**8)
@@ -314,9 +398,6 @@ def main():
         scaler_g = scaler_d = None
 
     # Training loop
-    best_val_loss = float("inf")
-    start_epoch = 0
-
     for epoch in range(start_epoch, config["training"]["epochs"]):
         # Training phase
         autoencoder.train()
@@ -330,7 +411,14 @@ def main():
             "disc_loss": 0,
         }
 
-        for batch in tqdm(train_loader, desc=f"Epoch {epoch}"):
+        max_steps_per_epoch = config.get("training", {}).get("max_steps_per_epoch", None)
+        max_steps_per_epoch = (
+            None
+            if max_steps_per_epoch in (None, "None")
+            else int(max_steps_per_epoch)
+        )
+
+        for step_idx, batch in enumerate(tqdm(train_loader, desc=f"Epoch {epoch}")):
             step_losses = train_step(
                 batch,
                 autoencoder,
@@ -347,36 +435,43 @@ def main():
             for k in train_losses:
                 train_losses[k] += step_losses[k]
 
+            if max_steps_per_epoch is not None and (step_idx + 1) >= max_steps_per_epoch:
+                break
+
         # Average losses
+        denom = max(1, (step_idx + 1) if "step_idx" in locals() else len(train_loader))
         for k in train_losses:
-            train_losses[k] /= len(train_loader)
+            train_losses[k] /= denom
 
         # Prepare all metrics
         metrics = {}
-
-        # Add training metrics
         metrics.update(log_metrics(train_losses, epoch, "train"))
 
-        # Validation phase
-        val_losses = validate(
-            autoencoder, discriminator, val_loader, losses, config, device
-        )
-        metrics.update(log_metrics(val_losses, epoch, "val"))
+        val_interval = int(config.get("training", {}).get("val_interval", 1) or 1)
+        do_val = ((epoch + 1) % val_interval) == 0
+        val_losses = None
 
-        # Save visualization
-        with torch.no_grad():
-            val_batch = next(iter(val_loader))
-            val_images = val_batch["image"].to(device).float()
-
-            with autocast(enabled=config["training"]["amp"]):
-                reconstruction, _, _ = autoencoder(val_images[:1])
-                reconstruction = reconstruction.float()
-
-            vis_original = visualize_2d(val_images[0].cpu())
-            vis_recon = visualize_2d(reconstruction[0].cpu())
-            metrics.update(
-                save_reconstruction_plot(vis_original, vis_recon, epoch, recon_dir)
+        if do_val:
+            # Validation phase
+            val_losses = validate(
+                autoencoder, discriminator, val_loader, losses, config, device
             )
+            metrics.update(log_metrics(val_losses, epoch, "val"))
+
+            # Save visualization
+            with torch.no_grad():
+                val_batch = next(iter(val_loader))
+                val_images = val_batch["image"].to(device).float()
+
+                with autocast(enabled=config["training"]["amp"]):
+                    reconstruction, _, _ = autoencoder(val_images[:1])
+                    reconstruction = reconstruction.float()
+
+                vis_original = visualize_2d(val_images[0].cpu())
+                vis_recon = visualize_2d(reconstruction[0].cpu())
+                metrics.update(
+                    save_reconstruction_plot(vis_original, vis_recon, epoch, recon_dir)
+                )
 
         # Add epoch number
         metrics["epoch"] = epoch
@@ -384,36 +479,38 @@ def main():
         # Single wandb log call per epoch
         wandb.log(metrics)
 
-        # Check if best model
-        val_total_loss = (
-            val_losses["recons_loss"]
-            + config["training"]["kl_weight"] * val_losses["kl_loss"]
-            + config["training"]["perceptual_weight"] * val_losses["p_loss"]
-        )
-
-        if val_total_loss < best_val_loss:
-            best_val_loss = val_total_loss
-            save_checkpoint(
-                {
-                    "epoch": epoch,
-                    "autoencoder_state_dict": autoencoder.state_dict(),
-                    "discriminator_state_dict": discriminator.state_dict(),
-                    "optimizer_g_state_dict": optimizer_g.state_dict(),
-                    "optimizer_d_state_dict": optimizer_d.state_dict(),
-                    "scheduler_g_state_dict": scheduler_g.state_dict(),
-                    "scheduler_d_state_dict": scheduler_d.state_dict(),
-                    "best_val_loss": best_val_loss,
-                    "config": config,
-                },
-                run_dir / "model.pt",
-                is_best=True,
+        # Check if best model (only when validation ran)
+        if val_losses is not None:
+            val_total_loss = (
+                val_losses["recons_loss"]
+                + config["training"]["kl_weight"] * val_losses["kl_loss"]
+                + config["training"]["perceptual_weight"] * val_losses["p_loss"]
             )
 
-            wandb.run.summary["best_val_loss"] = best_val_loss
-            wandb.run.summary["best_epoch"] = epoch
+            if val_total_loss < best_val_loss:
+                best_val_loss = val_total_loss
+                save_checkpoint(
+                    {
+                        "epoch": epoch,
+                        "autoencoder_state_dict": autoencoder.state_dict(),
+                        "discriminator_state_dict": discriminator.state_dict(),
+                        "optimizer_g_state_dict": optimizer_g.state_dict(),
+                        "optimizer_d_state_dict": optimizer_d.state_dict(),
+                        "scheduler_g_state_dict": scheduler_g.state_dict(),
+                        "scheduler_d_state_dict": scheduler_d.state_dict(),
+                        "best_val_loss": best_val_loss,
+                        "config": config,
+                    },
+                    run_dir / "model.pt",
+                    is_best=True,
+                )
+
+                wandb.run.summary["best_val_loss"] = best_val_loss
+                wandb.run.summary["best_epoch"] = epoch
 
         # Regular checkpoint save
-        if epoch % config["training"]["save_interval"] == 0:
+        save_best_only = bool(config.get("training", {}).get("save_best_only", False))
+        if (not save_best_only) and (epoch % config["training"]["save_interval"] == 0):
             save_checkpoint(
                 {
                     "epoch": epoch,
@@ -435,6 +532,50 @@ def main():
 
     # Finish wandb run
     wandb.finish()
+
+    # Always save a "last" checkpoint for downstream stages.
+    try:
+        save_checkpoint(
+            {
+                "epoch": config["training"]["epochs"] - 1,
+                "autoencoder_state_dict": autoencoder.state_dict(),
+                "discriminator_state_dict": discriminator.state_dict(),
+                "optimizer_g_state_dict": optimizer_g.state_dict(),
+                "optimizer_d_state_dict": optimizer_d.state_dict(),
+                "scheduler_g_state_dict": scheduler_g.state_dict(),
+                "scheduler_d_state_dict": scheduler_d.state_dict(),
+                "best_val_loss": best_val_loss,
+                "config": config,
+            },
+            run_dir / "model_last.pt",
+            is_best=False,
+        )
+    except Exception:
+        pass
+
+    # Write a stable pointer to the best checkpoint for downstream stages.
+    # This avoids having to chase timestamped run directories.
+    try:
+        stable_best = run_dir.parent / f"{config['main']['jobname']}_best.pt"
+        best_ckpt = run_dir / "model_best.pt"
+        last_ckpt = run_dir / "model_last.pt"
+        src = best_ckpt if best_ckpt.exists() else last_ckpt
+        if src.exists():
+            if stable_best.exists() or stable_best.is_symlink():
+                stable_best.unlink()
+            stable_best.symlink_to(src)
+            print(f"Wrote symlink: {stable_best} -> {src}")
+    except Exception:
+        try:
+            stable_best = run_dir.parent / f"{config['main']['jobname']}_best.pt"
+            best_ckpt = run_dir / "model_best.pt"
+            last_ckpt = run_dir / "model_last.pt"
+            src = best_ckpt if best_ckpt.exists() else last_ckpt
+            if src.exists():
+                shutil.copy2(src, stable_best)
+                print(f"Copied best checkpoint to: {stable_best}")
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":
