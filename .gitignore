@@ -57,6 +57,7 @@ wandb/
 *.csv
 results/
 outputs/
+_smoke_data/
 
 # Environment files (auto-generated)
 environment.yml

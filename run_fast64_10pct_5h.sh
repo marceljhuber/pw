@@ -18,8 +18,10 @@ cp -f "$VAE_CONFIG" "$RUN_ROOT/configs/" || true
 cp -f "$DIFF_CONFIG" "$RUN_ROOT/configs/" || true
 cp -f "$CTRL_CONFIG" "$RUN_ROOT/configs/" || true
 
-export WANDB_MODE=disabled
-export WANDB_SILENT=true
+# Enable online Weights & Biases tracking by default.
+# You can still override from shell before launching this script.
+export WANDB_MODE="${WANDB_MODE:-online}"
+export WANDB_SILENT="${WANDB_SILENT:-false}"
 
 echo "Run root: $RUN_ROOT"
 echo "Latents: $LATENTS_DIR"
