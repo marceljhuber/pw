@@ -65,6 +65,12 @@ This documentation serves as a knowledge base for:
    - Practical strategy to reduce FID
    - Evaluation protocol recommendations
 
+9. **[08_VAE_IMPL_DIFF_AND_ACTION_PLAN.md](08_VAE_IMPL_DIFF_AND_ACTION_PLAN.md)** - VAE gap analysis
+   - Differences vs original MAISI intent
+   - Why current quality is low
+   - 3 new 128px full-data VAE configs
+   - Recommended run order to improve FID
+
 ## Project Overview
 
 ### What is MAISI?

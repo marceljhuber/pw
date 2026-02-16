@@ -695,7 +695,9 @@ def setup_transforms(config=None):
         speckle_std = float(train_cfg.get("speckle_noise_std", speckle_std))
         if "random_crop_scale" in train_cfg:
             cs = train_cfg.get("random_crop_scale")
-            if isinstance(cs, (list, tuple)) and len(cs) == 2:
+            if cs in (None, "None", "none", False):
+                crop_scale = None
+            elif isinstance(cs, (list, tuple)) and len(cs) == 2:
                 crop_scale = (float(cs[0]), float(cs[1]))
 
     # Train transform: crop (optional) + augment + normalize to [-1, 1]
