@@ -14,6 +14,14 @@ LAT_TRAIN="$RUN_ROOT/latents/train"
 LAT_VAL="$RUN_ROOT/latents/val"
 SPLIT_TRAIN="$RUN_ROOT/splits/train_patients.txt"
 SPLIT_VAL="$RUN_ROOT/splits/val_patients.txt"
+REAL_TEST_ROOT="/media/user/Extreme SSD/Thesis/data/KermanyV3_resized/test"
+
+ENABLE_FID_MONITOR="${ENABLE_FID_MONITOR:-true}"
+FID_EVAL_EVERY="${FID_EVAL_EVERY:-100}"
+FID_SAMPLES_PER_CLASS="${FID_SAMPLES_PER_CLASS:-250}"
+FID_STEPS="${FID_STEPS:-250}"
+FID_BATCH_SIZE="${FID_BATCH_SIZE:-32}"
+FID_POLL_SECONDS="${FID_POLL_SECONDS:-180}"
 
 mkdir -p "$RUN_ROOT/logs" "$LAT_TRAIN" "$LAT_VAL" "$RUN_ROOT/DIFFUSION"
 
@@ -92,4 +100,30 @@ WANDB_MODE=online WANDB_SILENT=false WANDB_PROJECT=maisi-full-training \
   conda run -n maisi python "/media/user/Extreme SSD/Thesis/pw/train_diffusion.py" \
   --config "$DIFF_CFG" \
   --name "diff_fraction_consistent" \
-  --run_dir "$RUN_ROOT/DIFFUSION"
+  --run_dir "$RUN_ROOT/DIFFUSION" \
+  > "$RUN_ROOT/logs/diffusion_auto.log" 2>&1 &
+DIFF_PID=$!
+
+if [[ "$ENABLE_FID_MONITOR" == "true" ]]; then
+  echo "Starting checkpoint FID monitor (space-saving mode)..."
+  conda run -n maisi python "/media/user/Extreme SSD/Thesis/pw/scripts/monitor_diffusion_fid.py" \
+    --run_root "$RUN_ROOT" \
+    --diff_runs_root "$RUN_ROOT/DIFFUSION" \
+    --diff_name "diff_fraction_consistent" \
+    --diff_config "$DIFF_CFG" \
+    --real_root "$REAL_TEST_ROOT" \
+    --eval_every_epochs "$FID_EVAL_EVERY" \
+    --samples_per_class "$FID_SAMPLES_PER_CLASS" \
+    --steps "$FID_STEPS" \
+    --batch_size "$FID_BATCH_SIZE" \
+    --poll_seconds "$FID_POLL_SECONDS" \
+    --stop_when_idle \
+    > "$RUN_ROOT/logs/diff_fid_monitor.log" 2>&1 &
+  MONITOR_PID=$!
+fi
+
+wait "$DIFF_PID"
+
+if [[ "$ENABLE_FID_MONITOR" == "true" ]]; then
+  wait "$MONITOR_PID"
+fi

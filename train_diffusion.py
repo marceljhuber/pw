@@ -78,12 +78,13 @@ def setup_training_dirs(name, checkpoint_path=None, run_root="./runs/DIFFUSION")
     if checkpoint_path is not None and checkpoint_path != "None":
         if not os.path.exists(checkpoint_path):
             raise FileNotFoundError(f"Checkpoint not found at {checkpoint_path}")
-        checkpoint_name = os.path.basename(checkpoint_path)
-        if "epoch" in checkpoint_name:
-            try:
-                start_epoch = int(checkpoint_name.split("epoch")[-1].split(".")[0])
-            except ValueError:
-                logger.warning("Could not parse epoch number, starting from epoch 0")
+        try:
+            ckpt = torch.load(checkpoint_path, map_location="cpu")
+            start_epoch = int(ckpt.get("epoch", 0))
+        except Exception:
+            logger.warning(
+                "Could not read checkpoint epoch metadata, starting from epoch 0"
+            )
 
     return start_epoch, run_dir, model_save_path
 
@@ -130,6 +131,9 @@ def main():
     # Load config
     with open(args.config) as f:
         config = json.load(f)
+
+    if args.checkpoint is not None and args.checkpoint != "None":
+        config["main"]["trained_unet_path"] = args.checkpoint
 
     config["env_config"]["trained_unet_path"] = config["main"]["trained_unet_path"]
     config["env_config"]["trained_autoencoder_path"] = config["main"][
