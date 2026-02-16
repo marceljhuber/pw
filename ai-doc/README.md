@@ -59,6 +59,12 @@ This documentation serves as a knowledge base for:
    - Preprocessing recommendations
    - Class imbalance handling
 
+8. **[07_FID_LEARNINGS.md](07_FID_LEARNINGS.md)** - FID debugging learnings
+   - Root causes observed in this codebase
+   - What was fixed already
+   - Practical strategy to reduce FID
+   - Evaluation protocol recommendations
+
 ## Project Overview
 
 ### What is MAISI?
