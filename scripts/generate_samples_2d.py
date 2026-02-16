@@ -11,6 +11,7 @@ import torch
 from PIL import Image
 
 from networks.autoencoderkl_maisi import AutoencoderKlMaisi
+from networks.conditional_maisi_wrapper import ConditionalMAISIWrapper
 from scripts.sample import (
     ldm_conditional_sample_one_image,
     ldm_conditional_sample_one_image_controlnet,
@@ -45,12 +46,20 @@ def _load_diffusion(diff_ckpt_path: Path, diff_config_path: Path, device: torch.
 
     # Merge into args like training does.
     merged = {}
-    for section in ["main", "model_config", "env_config", "vae_def"]:
+    for section in ["main", "conditional_config", "model_config", "env_config", "vae_def"]:
         if section in cfg:
             merged.update(cfg[section])
     args = argparse.Namespace(**merged)
 
-    diffusion_unet = define_instance(args, "diffusion_unet_def").to(device)
+    if bool(getattr(args, "enable_conditional_training", False)):
+        diffusion_unet = ConditionalMAISIWrapper(
+            config_args=args,
+            num_classes=int(getattr(args, "num_classes", 4)),
+            class_emb_dim=int(getattr(args, "class_emb_dim", 64)),
+            conditioning_method=str(getattr(args, "conditioning_method", "input_concat")),
+        ).to(device)
+    else:
+        diffusion_unet = define_instance(args, "diffusion_unet_def").to(device)
     noise_scheduler = define_instance(args, "noise_scheduler")
 
     ckpt = torch.load(str(diff_ckpt_path), map_location=device)
@@ -93,6 +102,9 @@ def main():
     ap.add_argument("--controlnet_config", type=str, default=None)
     ap.add_argument("--label", type=int, default=0)
     ap.add_argument("--num_classes", type=int, default=4)
+    ap.add_argument("--class_label", type=int, default=None)
+    ap.add_argument("--use_cfg", action="store_true")
+    ap.add_argument("--guidance_scale", type=float, default=3.0)
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -140,9 +152,14 @@ def main():
                 latent_shape=latent_shape,
                 noise_factor=1.0,
                 num_inference_steps=int(args.steps),
+                class_labels=args.class_label,
+                use_cfg=bool(args.use_cfg),
+                guidance_scale=float(args.guidance_scale),
+                num_classes=int(args.num_classes),
             )
-            # img shape [B, C, H, W]
-            _save_tensor_as_png(img[0], out_dir / f"diff_{i:03d}.png")
+            # img is in [-1, 1], convert to [0, 255] for PNG.
+            img_u8 = ((img + 1.0) * 0.5 * 255.0).clamp(0, 255)
+            _save_tensor_as_png(img_u8[0], out_dir / f"diff_{i:03d}.png")
         else:
             img, _ = ldm_conditional_sample_one_image_controlnet(
                 autoencoder=autoencoder,

@@ -71,7 +71,7 @@ def load_config(config_path):
 
     # Merge configs with priority handling
     merged_config = {}
-    for section in ["main", "model_config", "env_config", "vae_def"]:
+    for section in ["main", "conditional_config", "model_config", "env_config", "vae_def"]:
         if section in config:
             merged_config.update(config[section])
 
@@ -104,6 +104,9 @@ def load_unet(
 ) -> torch.nn.Module:
     # Check if conditional training is enabled
     enable_conditional = getattr(args, "enable_conditional_training", False)
+    if bool(getattr(args, "use_cfg", False)) and not enable_conditional:
+        logger.warning("use_cfg=True with unconditional training; disabling CFG logic.")
+        args.use_cfg = False
 
     if enable_conditional:
         logger.info("Loading conditional MAISI UNet...")
@@ -243,13 +246,21 @@ def train_one_epoch(
                 )
                 noisy_latent = noise_scheduler.add_noise(latents, noise, timesteps)
 
-                if args.use_cfg:
-                    # Classifier-Free Guidance (CFG) training
-                    # Randomly drop conditioning 15% of the time to enable CFG at inference
-                    if random.random() < 0.15:  # 15% dropout rate
-                        class_labels = None  # Drop conditioning
+                if bool(getattr(args, "use_cfg", False)) and is_conditional:
+                    # CFG training: per-sample conditioning dropout.
+                    # Dropped samples use the dedicated unconditional token (index=num_classes).
+                    drop_prob = float(getattr(args, "cfg_dropout_prob", 0.15))
+                    num_classes = int(getattr(args, "num_classes", 4))
+                    class_labels_for_model = class_labels.clone()
+                    if drop_prob > 0:
+                        drop_mask = torch.rand(
+                            class_labels_for_model.shape,
+                            device=device,
+                            dtype=torch.float32,
+                        ) < drop_prob
+                        class_labels_for_model[drop_mask] = num_classes
                     noise_pred = unet(
-                        noisy_latent, timesteps, class_labels=class_labels
+                        noisy_latent, timesteps, class_labels=class_labels_for_model
                     )
                 elif is_conditional:
                     noise_pred = unet(
@@ -387,11 +398,9 @@ def generate_validation_images(
                 num_inference_steps=num_inference_steps,
             )
 
-            # Denormalize from [-1,1] to [0,1]
-            synthetic_image = (synthetic_image + 1) / 2.0
-
-            # Convert to uint8 range [0,255]
-            synthetic_image = (synthetic_image * 255).type(torch.uint8)
+            # ldm_conditional_sample_one_image returns [-1, 1].
+            # Convert to uint8 [0, 255] only for file saving.
+            synthetic_image_u8 = ((synthetic_image + 1.0) * 0.5 * 255.0).clamp(0, 255).to(torch.uint8)
 
             # Save the generated image
             timestamp = datetime.now().strftime("%Y%m%d_%H%M")
@@ -401,10 +410,10 @@ def generate_validation_images(
                 output_ext=".png",
                 separate_folder=False,
             )
-            img_saver(synthetic_image[0])
+            img_saver(synthetic_image_u8[0])
 
-            # For return value, keep in normalized form
-            generated_images.append((synthetic_image.float() / 255) * 2 - 1)  # TODO
+            # Keep normalized tensor for downstream visualization/logging.
+            generated_images.append(synthetic_image.float())
 
         except Exception as e:
             print(f"Error generating validation image with seed {seed}: {str(e)}")

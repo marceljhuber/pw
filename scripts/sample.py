@@ -82,16 +82,20 @@ def ldm_conditional_sample_one_image(
     latent_shape,
     noise_factor,
     num_inference_steps,
+    class_labels=None,
+    use_cfg=False,
+    guidance_scale=3.0,
+    num_classes=4,
 ):
     """
     Generate a single synthetic image using latent diffusion model without ControlNet.
+
+    Returns:
+        torch.Tensor: Image tensor in [-1, 1] with shape [B, C, H, W].
     """
-    # PNG image intensity range
-    a_min = 0
-    a_max = 255
     # autoencoder output intensity range
     b_min = -1.0
-    b_max = 1
+    b_max = 1.0
 
     recon_model = ReconModel(autoencoder=autoencoder, scale_factor=scale_factor).to(
         device
@@ -106,8 +110,38 @@ def ldm_conditional_sample_one_image(
         # for t in tqdm(noise_scheduler.timesteps, ncols=110):
         for t in noise_scheduler.timesteps:  # TODO tqdm
             timesteps = torch.Tensor((t,)).to(device)
-            # Just use UNet without ControlNet conditioning
-            noise_pred = diffusion_unet(latents, timesteps)
+            if use_cfg and (class_labels is not None):
+                # Classifier-Free Guidance (CFG) sampling for class-conditional models.
+                if not torch.is_tensor(class_labels):
+                    cond_labels = torch.full(
+                        (latents.shape[0],),
+                        int(class_labels),
+                        device=device,
+                        dtype=torch.long,
+                    )
+                else:
+                    cond_labels = class_labels.to(device=device, dtype=torch.long)
+
+                uncond_labels = torch.full_like(cond_labels, int(num_classes))
+                noise_pred_uncond = diffusion_unet(latents, timesteps, class_labels=uncond_labels)
+                noise_pred_cond = diffusion_unet(latents, timesteps, class_labels=cond_labels)
+                noise_pred = noise_pred_uncond + float(guidance_scale) * (
+                    noise_pred_cond - noise_pred_uncond
+                )
+            elif class_labels is not None:
+                if not torch.is_tensor(class_labels):
+                    cond_labels = torch.full(
+                        (latents.shape[0],),
+                        int(class_labels),
+                        device=device,
+                        dtype=torch.long,
+                    )
+                else:
+                    cond_labels = class_labels.to(device=device, dtype=torch.long)
+                noise_pred = diffusion_unet(latents, timesteps, class_labels=cond_labels)
+            else:
+                # Unconditional model path
+                noise_pred = diffusion_unet(latents, timesteps)
             latents, _ = noise_scheduler.step(noise_pred, t, latents)
 
         del noise_pred
@@ -115,15 +149,8 @@ def ldm_conditional_sample_one_image(
 
         # Decode latents to images
         synthetic_images = recon_model(latents)
-
-        ################################################################################################################
         synthetic_images = torch.clip(synthetic_images, b_min, b_max).cpu()
-        # project output to [0, 1]
-        synthetic_images = (synthetic_images - b_min) / (b_max - b_min)
-        # project output to [-1, 1]
-        synthetic_images = synthetic_images * (a_max - a_min) + a_min
         torch.cuda.empty_cache()
-        ################################################################################################################
 
     return synthetic_images
 
@@ -350,6 +377,9 @@ class LDMSampler:
                         num_inference_steps=self.num_inference_steps,
                     )
                     # print(f"synthetic_image.shape:", synthetic_image.shape)
+
+                    # Convert from [-1, 1] to [0, 255] for PNG saving.
+                    synthetic_image = ((synthetic_image + 1.0) * 0.5 * 255.0).clamp(0, 255)
 
                     # Rotate image to correct orientation (rotate 90 degrees clockwise to fix 270 degree rotation)
                     # For a tensor with shape [batch, channel, height, width]

@@ -15,7 +15,7 @@ class ConditionalMAISIWrapper(nn.Module):
     Supports CNV, DME, DRUSEN, NORMAL classes (indices 0-3).
     """
 
-    def __init__(self, config_args, num_classes=4, class_emb_dim=64, conditioning_method='input_concat'):
+    def __init__(self, config_args, num_classes=4, class_emb_dim=64, conditioning_method="input_concat"):
         """
         Args:
             config_args: Configuration arguments containing diffusion_unet_def
@@ -35,9 +35,12 @@ class ConditionalMAISIWrapper(nn.Module):
         # Add class embedding layer (+1 for unconditional)
         self.class_embedding = nn.Embedding(num_classes + 1, class_emb_dim)
 
-        if conditioning_method == 'time_embedding':
-            self._setup_time_embedding_conditioning()
-        elif conditioning_method == 'input_concat':
+        if conditioning_method == "time_embedding":
+            raise ValueError(
+                "conditioning_method='time_embedding' is not implemented in this wrapper. "
+                "Use conditioning_method='input_concat'."
+            )
+        elif conditioning_method == "input_concat":
             self._setup_input_concatenation()
         else:
             raise ValueError(f"Unknown conditioning method: {conditioning_method}")
@@ -55,14 +58,11 @@ class ConditionalMAISIWrapper(nn.Module):
 
     def _setup_input_concatenation(self):
         """Setup class conditioning through input concatenation"""
-        print("🔧 Setting up input concatenation conditioning...")
-
         # Access the conv_in layer from MAISI UNet
-        if not hasattr(self.base_unet, 'conv_in'):
+        if not hasattr(self.base_unet, "conv_in"):
             raise ValueError("MAISI UNet does not have conv_in layer")
 
         original_conv_block = self.base_unet.conv_in
-        print(f"🎯 Found conv_in layer: {type(original_conv_block)}")
 
         # Extract the actual conv layer from MONAI Convolution block
         actual_conv = self._extract_conv_from_monai_block(original_conv_block)
@@ -72,18 +72,21 @@ class ConditionalMAISIWrapper(nn.Module):
         original_in_channels = actual_conv.in_channels
         new_in_channels = original_in_channels + self.class_emb_dim
 
-        print(f"📊 Original input channels: {original_in_channels}")
-        print(f"🔢 Adding class embedding channels: {self.class_emb_dim}")
-        print(f"🎯 New input channels: {new_in_channels}")
-
         # Create new conv layer with additional channels
         new_conv = self._create_new_conv_layer(actual_conv, original_in_channels)
 
         # Create new MONAI Convolution block with the modified conv layer
         from monai.networks.blocks import Convolution
 
+        if isinstance(actual_conv, nn.Conv3d):
+            spatial_dims = 3
+        elif isinstance(actual_conv, nn.Conv2d):
+            spatial_dims = 2
+        else:
+            raise ValueError(f"Unsupported conv layer type: {type(actual_conv)}")
+
         new_conv_block = Convolution(
-            spatial_dims=3,  # MAISI uses 3D
+            spatial_dims=spatial_dims,
             in_channels=new_in_channels,
             out_channels=actual_conv.out_channels,
             strides=1,
@@ -101,12 +104,11 @@ class ConditionalMAISIWrapper(nn.Module):
         self.base_unet.in_channels = new_in_channels
 
         self.use_input_conditioning = True
-        print("✅ Input concatenation setup complete")
 
     def _extract_conv_from_monai_block(self, monai_conv_block):
         """Extract the actual PyTorch Conv layer from MONAI Convolution block"""
         # MONAI Convolution is a Sequential block
-        if hasattr(monai_conv_block, 'conv'):
+        if hasattr(monai_conv_block, "conv"):
             return monai_conv_block.conv
 
         # Search through the Sequential modules
@@ -187,20 +189,7 @@ class ConditionalMAISIWrapper(nn.Module):
         # Get class embeddings
         class_emb = self.class_embedding(class_labels)  # [batch_size, class_emb_dim]
 
-        if self.conditioning_method == 'time_embedding':
-            return self._forward_time_embedding(x, timesteps, class_emb, **kwargs)
-        else:
-            return self._forward_input_concat(x, timesteps, class_emb, **kwargs)
-
-    def _forward_time_embedding(self, x, timesteps, class_emb, **kwargs):
-        """Forward pass using time embedding conditioning"""
-        # Project class embedding and add to time embedding
-        class_emb_proj = self.class_proj(class_emb)
-
-        # We need to modify the internal time embedding
-        # For now, we'll pass it through normally and let the base UNet handle it
-        # A full implementation would require modifying the MAISI UNet's forward method
-        return self.base_unet(x, timesteps, **kwargs)
+        return self._forward_input_concat(x, timesteps, class_emb, **kwargs)
 
     def _forward_input_concat(self, x, timesteps, class_emb, **kwargs):
         """Forward pass using input concatenation conditioning"""
@@ -218,38 +207,33 @@ class ConditionalMAISIWrapper(nn.Module):
         """
         Load pretrained weights with proper handling of modified conv_in layer
         """
-        checkpoint = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
+        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
 
-        if 'unet_state_dict' in checkpoint:
+        if "unet_state_dict" in checkpoint:
             base_state_dict = {}
             original_conv_in_weight = None
 
-            for key, value in checkpoint['unet_state_dict'].items():
-                if not key.startswith('class_embedding') and not key.startswith('class_proj'):
+            for key, value in checkpoint["unet_state_dict"].items():
+                if not key.startswith("class_embedding") and not key.startswith("class_proj"):
                     # Handle conv_in layer specially for input concatenation
-                    if key == 'conv_in.conv.weight' and self.conditioning_method == 'input_concat':
+                    if key == "conv_in.conv.weight" and self.conditioning_method == "input_concat":
                         original_conv_in_weight = value
-                        print(f"🔧 Found original conv_in weight shape: {value.shape}")
                         continue
-                    elif key.startswith('conv_in.') and self.conditioning_method == 'input_concat':
+                    elif key.startswith("conv_in.") and self.conditioning_method == "input_concat":
                         # Skip other conv_in weights as we modified this layer
                         continue
 
                     base_state_dict[key] = value
 
             # Load everything except conv_in
-            missing_keys, unexpected_keys = self.base_unet.load_state_dict(base_state_dict, strict=False)
+            self.base_unet.load_state_dict(base_state_dict, strict=False)
 
             # Initialize modified conv_in with original weights + zeros
-            if original_conv_in_weight is not None and self.conditioning_method == 'input_concat':
+            if original_conv_in_weight is not None and self.conditioning_method == "input_concat":
                 self._initialize_modified_conv_in(original_conv_in_weight)
-
-            print(f"✅ Loaded pretrained base UNet weights from {checkpoint_path}")
 
     def _initialize_modified_conv_in(self, original_conv_weight):
         """Initialize modified conv_in layer with original weights + zero padding"""
-        print("🎯 Initializing modified conv_in layer...")
-
         # Find the conv layer in the modified conv_in block
         conv_layer = None
         for module in self.base_unet.conv_in:
@@ -258,13 +242,10 @@ class ConditionalMAISIWrapper(nn.Module):
                 break
 
         if conv_layer is None:
-            print("⚠️ Warning: Could not find conv layer in conv_in block")
             return
 
         original_in_channels = original_conv_weight.shape[1]
         new_in_channels = conv_layer.in_channels
-
-        print(f"📊 Original channels: {original_in_channels}, New channels: {new_in_channels}")
 
         with torch.no_grad():
             # Copy original weights to first channels
@@ -272,11 +253,8 @@ class ConditionalMAISIWrapper(nn.Module):
             # Zero-initialize the new class embedding channels
             conv_layer.weight[:, original_in_channels:] = 0.0
 
-            print("✅ Successfully initialized conv_in with original + zero-padded weights")
 
-
-def create_conditional_maisi_unet(config_args, num_classes=4, class_emb_dim=64,
-                                conditioning_method='input_concat'):
+def create_conditional_maisi_unet(config_args, num_classes=4, class_emb_dim=64, conditioning_method="input_concat"):
     """
     Factory function to create a conditional MAISI UNet
 
