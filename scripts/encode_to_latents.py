@@ -120,11 +120,7 @@ def process_images(
             image = transforms(image)
 
             with torch.inference_mode():
-                if device.type == "cuda":
-                    with torch.amp.autocast("cuda"):
-                        latent, _ = autoencoder.encode(image.unsqueeze(0).to(device))
-                else:
-                    latent, _ = autoencoder.encode(image.unsqueeze(0).to(device))
+                latent, _ = autoencoder.encode(image.unsqueeze(0).to(device))
                 torch.save(latent.cpu(), out_filename)
 
 

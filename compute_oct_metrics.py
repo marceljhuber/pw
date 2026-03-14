@@ -33,6 +33,14 @@ from skimage.transform import resize
 import torch
 import torch_fidelity
 
+# Optional RETFound feature extractor registration
+try:
+    from scripts.retfound_fidelity import register_retfound_feature_extractor
+
+    register_retfound_feature_extractor()
+except Exception:
+    pass
+
 
 # ------------------------------- Utilities ---------------------------------- #
 
@@ -94,29 +102,40 @@ def mean_ssim_dir(dir_real: Path, dir_fake: Path):
     return (float(np.mean(scores)) if scores else float("nan")), len(scores)
 
 
-def compute_fid_is(reals, fakes, device_cuda=True, feature_extractor=None):
+def compute_fid_is(
+    reals,
+    fakes,
+    device_cuda=True,
+    feature_extractor=None,
+    feature_extractor_weights_path=None,
+):
     """
     Use torch-fidelity to compute FID (real vs fake) and IS (fake only).
     `reals` and `fakes` are directory paths.
     """
+    use_isc = feature_extractor not in ("retfound-mae",)
     kwargs = dict(
         input1=str(fakes),  # IS uses input1 (generated set)
         input2=str(reals),  # needed for FID
         cuda=device_cuda,
         fid=True,
-        isc=True,
+        isc=use_isc,
         kid=False,
         verbose=False,
         samples_find_deep=True,  # recurse into subfolders
     )
+    if feature_extractor == "retfound-mae":
+        kwargs["feature_layer_fid"] = "retfound"
     if feature_extractor:
         # torch-fidelity will fall back to default if unknown; typical is 'inception-v3-compat'
         kwargs["feature_extractor"] = feature_extractor
+    if feature_extractor_weights_path:
+        kwargs["feature_extractor_weights_path"] = feature_extractor_weights_path
 
     m = torch_fidelity.calculate_metrics(**kwargs)
     fid = float(m["frechet_inception_distance"])
-    is_mean = float(m["inception_score_mean"])
-    is_std = float(m["inception_score_std"])
+    is_mean = float(m.get("inception_score_mean", float("nan")))
+    is_std = float(m.get("inception_score_std", float("nan")))
     return fid, is_mean, is_std
 
 
@@ -158,6 +177,12 @@ def main():
         default=None,
         type=str,
         help="torch-fidelity feature extractor for FID (e.g., 'inception-v3-compat' or your OCT extractor)",
+    )
+    ap.add_argument(
+        "--feature_extractor_weights_path",
+        default=None,
+        type=str,
+        help="Optional path to feature extractor weights (e.g., RETFound checkpoint).",
     )
     ap.add_argument(
         "--seed", default=42, type=int, help="Random seed (affects IS splits)"
@@ -210,7 +235,11 @@ def main():
         r_dir = args.real_root / c
         f_dir = args.fake_root / c
         fid, is_mean, is_std = compute_fid_is(
-            r_dir, f_dir, device_cuda=use_cuda, feature_extractor=args.feature_extractor
+            r_dir,
+            f_dir,
+            device_cuda=use_cuda,
+            feature_extractor=args.feature_extractor,
+            feature_extractor_weights_path=args.feature_extractor_weights_path,
         )
         ssim_mean, ssim_pairs = mean_ssim_dir(r_dir, f_dir)
         per_class[c] = dict(
@@ -229,6 +258,7 @@ def main():
         args.fake_root,
         device_cuda=use_cuda,
         feature_extractor=args.feature_extractor,
+        feature_extractor_weights_path=args.feature_extractor_weights_path,
     )
     ssim_all_mean, ssim_all_pairs = mean_ssim_dir(args.real_root, args.fake_root)
 
@@ -273,6 +303,8 @@ def main():
     lines.append(
         f"Feature extractor (FID): {args.feature_extractor or 'inception-v3-compat (default)'}"
     )
+    if args.feature_extractor_weights_path:
+        lines.append(f"Feature extractor weights: {Path(args.feature_extractor_weights_path).resolve()}")
     lines.append(f"Real root: {args.real_root.resolve()}")
     lines.append(f"Fake root: {args.fake_root.resolve()}")
     lines.append("-" * 80)
